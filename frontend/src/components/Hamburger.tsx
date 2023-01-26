@@ -13,12 +13,12 @@ function Hamburger() {
         <FontAwesomeIcon icon={faBars} />
       </button>
       {isOpen && (
-        <ul>
+        <ul className="hamburger-menu-list">
           <li>
-            <Link to="/login">Login</Link>
+            <Link to="/login" className="login-button">Login</Link>
           </li>
           <li>
-            <Link to="/register">Register</Link>
+            <Link to="/register" className="register-button">Register</Link>
           </li>
           <li>
             <Link to="/favorite">Favorite Recipes</Link>

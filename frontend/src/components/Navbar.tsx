@@ -13,9 +13,12 @@ function Navbar() {
           </Link>
         </li>
         <Hamburger></Hamburger>
-        <ul>
+        <ul className="nav-menu">
           <li>
             <Link to="/login">Login</Link>
+          </li>
+          <li>
+            <Link to="/register">Register</Link>
           </li>
           <li>
             <Link to="/favorite">Favorite Recipes</Link>
