@@ -1,0 +1,29 @@
+@import "./variables";
+nav {
+  ul {
+    display: flex;
+    padding: 0.5rem;
+    align-items: center;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .logo {
+    color: $accent-color;
+    font-family: "Quicksand", sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+}
+
+@media(min-width:600px) {
+    .hamburger-menu {
+        display:none;
+    }
+}
