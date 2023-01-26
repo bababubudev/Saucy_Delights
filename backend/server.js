@@ -1,9 +1,12 @@
-const express=require('express')
-const dotnev=require('dotenv').config()
-const port = process.env.PORT||5000
+import express from "express"
+import dotenv from "dotenv"
 
-const app=express()
+import { router } from "./routes/userRoutes.js"
 
-app.use('/api/users',require('./routes/userRoutes'))
+dotenv.config()
+const app = express()
+const port = process.env.PORT || 5000
 
-app.listen(port,()=>console.log(`Server started on port ${port}`))
+app.use('/api/users', router)
+
+app.listen(port, () => console.log(`Server started on port ${port}`))
