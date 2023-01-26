@@ -19,6 +19,7 @@ function App() {
           <Route path="/favorite" element={<Favorite/>}></Route>
           <Route path="/login" element={<Login/>}></Route>
           <Route path="/create-recipe" element={<CreateRecipe/>}></Route>
+          <Route path="/nav-bar" element={<CreateRecipe/>}></Route>
         </Routes>
       </Router>
     </>
