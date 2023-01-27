@@ -1,9 +1,20 @@
+import { query } from "../db/dbconfig.js"
+
 // @desc Get all users (for now!!)
 // @route GET /api/users
 // @access Public
 const getUsers = async (req, res) =>
 {
-    res.status(200).json({ message: "GET USERS" })
+    query('SELECT * FROM users', (err, result) => 
+    {
+        if (err)
+        {
+            res.status(400)
+            throw new Error(err.message)
+        }
+        
+        res.json(result.rows)
+    })
 }
 
 // @desc Set user 
@@ -11,13 +22,6 @@ const getUsers = async (req, res) =>
 // @access Public
 const setUser = async (req, res) =>
 {
-    // @desc User will be posting either comment or a search request
-    if (!(req.body.comment || req.body.searchRequest))
-    {
-        res.status(400)
-        throw new Error("PLEASE USE TEXT BEFORE POSTING!")
-    }
-
     res.status(200).json({ message: "SET USER" })
 }
 
