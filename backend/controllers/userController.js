@@ -20,9 +20,19 @@ const getUsers = async (req, res) =>
 // @desc Set user 
 // @route POST /api/users
 // @access Public
+//DOESNT WORK FOR NOW LMAO
 const setUser = async (req, res) =>
-{
-    res.status(200).json({ message: "SET USER" })
+{   
+    await query(`INSERT INTO users (email,name,password) VALUES (${req.body.email},${req.body.name},${req.body.password})`,(err,result)=>
+    {
+        console.log(req.body.email,req.body.name,req.body.password)
+        if (err)
+        {
+            res.status(400)
+            throw new Error(err.message)
+        }
+        res.status(200).json({ message: `SET USER ${req.body.email}, ${req.body.name}, ${req.body.password}` })
+    })
 }
 
 // @desc Update user 
