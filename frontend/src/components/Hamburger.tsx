@@ -7,7 +7,7 @@ import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import "../styles/navbar.scss";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 function Hamburger() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -46,7 +46,10 @@ function Hamburger() {
               </span>
             </Link>
           </li>
-          <input type="search" placeholder="Search for a recipe..." />
+          <div className="search">
+            <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon"/>
+            <input type="search" placeholder="Search for a recipe..." />
+          </div>
         </ul>
       )}
     </div>
