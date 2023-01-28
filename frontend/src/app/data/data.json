@@ -1,0 +1,39 @@
+{
+    "recipes": [
+      {
+        "image": "https://www.example.com/recipe1.jpg",
+        "title": "Recipe 1",
+        "difficulty": "Easy",
+        "star_rating": 4.5,
+        "rating_number": 120
+      },
+      {
+        "image": "https://www.example.com/recipe2.jpg",
+        "title": "Recipe 2",
+        "difficulty": "Intermediate",
+        "star_rating": 4.0,
+        "rating_number": 80
+      },
+      {
+        "image": "https://www.example.com/recipe3.jpg",
+        "title": "Recipe 3",
+        "difficulty": "Easy",
+        "star_rating": 5.0,
+        "rating_number": 90
+      },
+      {
+        "image": "https://www.example.com/recipe4.jpg",
+        "title": "Recipe 4",
+        "difficulty": "Expert",
+        "star_rating": 3.5,
+        "rating_number": 50
+      },
+      {
+        "image": "https://www.example.com/recipe5.jpg",
+        "title": "Recipe 5",
+        "difficulty": "Intermediate",
+        "star_rating": 4.2,
+        "rating_number": 70
+      }
+    ]
+  }
