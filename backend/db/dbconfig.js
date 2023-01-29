@@ -3,16 +3,16 @@ import dotenv from "dotenv"
 const { Pool } = pg;
 dotenv.config()
 
-const pool = new Pool({
+export const pool = new Pool({
   user: "postgres",
   host: "localhost",
   port: 5432,
-  database: "recipes",
+  database: "saucy_data",
   password: process.env.DB_PASSWORD
 })
 
-export function query(text,params)
-{
-    pool.query(text,params)
-}
+// export function query(text,params)
+// {
+//     pool.query(text,params)
+// }
 

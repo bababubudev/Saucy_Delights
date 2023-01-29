@@ -1,6 +1,6 @@
-const errorHandler = (err, req, res, next) =>
+export function errorHandler (err, req, res, next)
 {
-    const statusCode = req.statusCode ? req.statusCode : 500
+    const statusCode = res.statusCode ? res.statusCode : 500
 
     res.status(statusCode)
     res.json({
@@ -9,7 +9,3 @@ const errorHandler = (err, req, res, next) =>
     })
 }
 
-export
-{
-    errorHandler
-}
