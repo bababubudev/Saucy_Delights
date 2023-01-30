@@ -11,7 +11,7 @@ function RecipeCategory(props: RecipeCategoryProps) {
       <h2>{props.title}</h2>
       <div className="recipe-card-list">
         {data.recipes.map((recipe) => (
-          <RecipeCard title={recipe.title} image={recipe.image} />
+          <RecipeCard title={recipe.title} image={recipe.image} totalRating={recipe.totalRating} starRating={recipe.starRating}/>
         ))}
       </div>
     </>

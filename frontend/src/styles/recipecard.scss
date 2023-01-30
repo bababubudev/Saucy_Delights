@@ -1,0 +1,30 @@
+.recipe-card {
+  display: grid;
+  font-family: "Source Sans Pro", sans-serif;
+  grid-template-columns: 40% 1fr;
+  grid-template-rows: 25% 15% 1fr;
+  width:95%;
+  margin:1rem auto;
+  @media(min-width:800px) {
+    display:flex;
+    flex-direction: column;
+  }
+  .img-wrapper {
+    grid-row: 1/4;
+    grid-column: 1/2;
+    width:125px;
+    img {
+        object-fit: cover;
+        width:125px;
+        aspect-ratio: 1/1;
+    }
+  }
+  .rating-wrapper {
+    display:flex;
+  }
+
+  .card-title {
+    font-size:1.15rem;
+  }
+
+}

@@ -4,14 +4,14 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import RecipeCategory from "../components/RecipeCategory";
 
 import data from "../app/data/data.json";
-interface Recipe {
-  id: number;
-  title: string;
-  difficulty: string;
-  image: string;
-  starRating: number;
-  ratingNumber: number;
-}
+// interface Recipe {
+//   id: number;
+//   title: string;
+//   difficulty: string;
+//   image: string;
+//   starRating: number;
+//   tota: number;
+// }
 function Home() {
   return (
     <>

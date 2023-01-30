@@ -1,39 +1,39 @@
 {
     "recipes": [
       {
-        "image": "https://www.example.com/recipe1.jpg",
-        "title": "Recipe 1",
+        "image": "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F19%2F2014%2F07%2F10%2Fpepperoni-pizza-ck-x.jpg&q=60",
+        "title": "Pepperoni Pizza",
         "difficulty": "Easy",
-        "star_rating": 4.5,
-        "rating_number": 120
+        "starRating": 4.5,
+        "totalRating": 120
       },
       {
-        "image": "https://www.example.com/recipe2.jpg",
-        "title": "Recipe 2",
+        "image": "https://www.kitchenstories.com/_next/image?url=https%3A%2F%2Fimages.services.kitchenstories.io%2Fp5fK-NDSkP-S888G0jyJPojbzzY%3D%2F864x648%2Ffilters%3Aquality(90)%2Fimages.kitchenstories.io%2FcommunityImages%2F0d0a60bcc93d26e19eed55f3c44df026_c3819030-9eda-443d-be48-16fc7029033f.jpg&w=1440&q=90",
+        "title": "Pro Cabonara",
         "difficulty": "Intermediate",
-        "star_rating": 4.0,
-        "rating_number": 80
+        "starRating": 4.0,
+        "totalRating": 80
       },
       {
-        "image": "https://www.example.com/recipe3.jpg",
-        "title": "Recipe 3",
+        "image": "https://thecozycook.com/wp-content/uploads/2022/04/Lasagna-Recipe-f.jpg",
+        "title": "Mamamia Lasagna",
         "difficulty": "Easy",
-        "star_rating": 5.0,
-        "rating_number": 90
+        "starRating": 5.0,
+        "totalRating": 90
       },
       {
-        "image": "https://www.example.com/recipe4.jpg",
-        "title": "Recipe 4",
+        "image": "https://www.seriouseats.com/thmb/zKq67u3TJ3B0wknpgyc-y8ymP3U=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__recipes__images__2013__11__20131112-turkey-weisswurst-recipe-34-ba385b3d5ab64d1786f45a7b39c20e8e.jpg",
+        "title": "Wesswurst",
         "difficulty": "Expert",
-        "star_rating": 3.5,
-        "rating_number": 50
+        "starRating": 3.5,
+        "totalRating": 50
       },
       {
-        "image": "https://www.example.com/recipe5.jpg",
-        "title": "Recipe 5",
+        "image": "https://tmbidigitalassetsazure.blob.core.windows.net/rms3-prod/attachments/37/1200x1200/Garlic-Herbed-Grilled-Tuna-Steaks_EXPS_DIYD19_44354_B04_24_1b.jpg",
+        "title": "Nice tuna",
         "difficulty": "Intermediate",
-        "star_rating": 4.2,
-        "rating_number": 70
+        "starRating": 4.2,
+        "totalRating": 70
       }
     ]
   }
