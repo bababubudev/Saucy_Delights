@@ -1,9 +1,19 @@
-const express=require('express')
-const dotnev=require('dotenv').config()
-const port = process.env.PORT||5000
+import express from "express"
+import dotenv from "dotenv"
+import bodyParser from "body-parser"
 
-const app=express()
+import { router } from "./routes/userRoutes.js"
+import { errorHandler } from "./middleware/errorMiddleware.js"
 
-app.use('/api/users',require('./routes/userRoutes'))
+dotenv.config()
+const app = express()
+const port = process.env.PORT || 5000
 
-app.listen(port,()=>console.log(`Server started on port ${port}`))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+
+
+app.use('/api/users', router)
+app.use(errorHandler)
+
+app.listen(port, () => console.log(`Server started on port ${port}`))
