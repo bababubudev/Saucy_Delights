@@ -19,6 +19,10 @@ const initialState: AuthState = {
   email: null,
 };
 
+//Register user
+
+
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
