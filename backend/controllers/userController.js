@@ -2,25 +2,27 @@ import asyncHandler from "express-async-handler"
 import { queryHandler } from "../db/queryhandler.js"
 import bcrypt from "bcryptjs"
 
-// @desc Get all users (for now!!)
+// @desc Log in user with email and password
 // @route GET /api/users
 // @access Public
 const loginUser = asyncHandler(async (req, res) =>
 {
-    const queryText = `SELECT password FROM users WHERE email='${req.body.email}'`
+    const queryText = `SELECT * FROM users WHERE email='${req.body.email}'`
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else 
-    {
-        console.log(result.message.rows[0].password)
-        res.send({ message: `user ${req.body.email} ${req.body.name} get` })
+    {   
+        let passwordFromDB=result.message.rows[0].password
+        if ((passwordFromDB)&&(await bcrypt.compare(req.body.password,passwordFromDB)))
+            res.send({ message: `user ${req.body.email} ${req.body.name} get` })
+        else    
+            res.send({message:"invalid credentials"})
     }
 })
 
 // @desc Set user 
 // @route POST /api/users
 // @access Public
-//DOESNT WORK FOR NOW LMAO
 const registerUser = asyncHandler(async (req, res) =>
 {
     if (!(req.body.name || req.body.email || req.body.password))
@@ -71,10 +73,25 @@ const deleteUser = asyncHandler(async (req, res) =>
     else res.send({ message: `User with id ${req.params.id} deleted` })
 })
 
+// @desc Get user info by id(for now)
+// @route GET /api/users
+// @access Private!!!
+const getUser = asyncHandler(async (req, res) =>
+{
+    const queryText = `SELECT * FROM users WHERE id='${req.params.id}'`
+    let result = await queryHandler(queryText)
+    if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
+    else 
+    {   
+        res.send({message:result.message.rows[0]})
+    }
+})
+
 export
 {
     loginUser,
     registerUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUser
 }

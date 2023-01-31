@@ -4,12 +4,13 @@ import
     loginUser,
     registerUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUser
 } from '../controllers/userController.js'
 
 const router = express.Router()
 
 router.route('/').get(loginUser).post(registerUser)
-router.route('/:id').put(updateUser).delete(deleteUser)
+router.route('/:id').get(getUser).put(updateUser).delete(deleteUser)
 
 export { router }
