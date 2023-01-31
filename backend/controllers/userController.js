@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs"
 // @access Public
 const loginUser = asyncHandler(async (req, res) =>
 {
-    const queryText = `SELECT password FROM users WHERE email='${req.body.email}'`
+    const queryText = `SELECT password FROM users WHERE email='${req.body.email}';`
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else 
@@ -52,7 +52,7 @@ const updateUser = asyncHandler(async (req, res) =>
     queryText += req.body.fav_recipes ? `fav_recipes = '${req.body.fav_recipes}', ` : ``
     queryText += req.body.comments ? `comments = '${req.body.comments}', ` : ``
     queryText = queryText.substring(0, queryText.length - 2)
-    queryText += ` WHERE id=${req.params.id}`
+    queryText += ` WHERE id=${req.params.id};`
 
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
@@ -64,7 +64,7 @@ const updateUser = asyncHandler(async (req, res) =>
 // @access Public
 const deleteUser = asyncHandler(async (req, res) =>
 {
-    const queryText = `DELETE FROM users WHERE id=${req.params.id}`
+    const queryText = `DELETE FROM users WHERE id=${req.params.id};`
     let result = await queryHandler(queryText)
 
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })

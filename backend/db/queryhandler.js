@@ -2,7 +2,7 @@ import { pool } from "./dbconfig.js"
 
 pool.connect()
 
-export async function queryHandler(queryText, res)
+export async function queryHandler(queryText)
 {
     try
     {
