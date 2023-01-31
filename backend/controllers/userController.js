@@ -66,7 +66,7 @@ const updateUser = asyncHandler(async (req, res) =>
     queryText += req.body.comments ? `comments = '${req.body.comments}', ` : ``
     queryText = queryText.substring(0, queryText.length - 2)
     queryText += ` WHERE email='${email}'`
-    console.log(queryText)
+
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else res.send({ message: `User with email ${email} updated` })

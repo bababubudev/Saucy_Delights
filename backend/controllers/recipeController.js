@@ -3,7 +3,7 @@ import { queryHandler } from "../db/queryhandler.js"
 
 const getAllRecipes = asyncHandler(async (req, res) =>
 {
-    const queryText = `SELECT * FROM recipes`
+    const queryText = `SELECT * FROM recipes;`
 
     const result = await queryHandler(queryText)
     if (result.flag === false)
@@ -23,7 +23,7 @@ const getAllRecipes = asyncHandler(async (req, res) =>
 const getRecipe = asyncHandler(async (req, res) =>
 {
     const id = req.params.id
-    const queryText = `SELECT * FROM recipes WHERE id=${id}`
+    const queryText = `SELECT * FROM recipes WHERE id=${id};`
 
     const result = await queryHandler(queryText)
     if (result.flag === false)
@@ -67,7 +67,18 @@ const postRecipe = asyncHandler(async (req, res) =>
 
 const updateRecipe = asyncHandler(async (req, res) =>
 {
+    const id = req.params.id
+
     let queryText = `UPDATE recipes SET `
+    queryText += req.body.name ? `name = '${req.body.name}', ` : ``
+    queryText += req.body.description ? `description = '${req.body.description}', ` : ``
+    queryText += req.body.nationality ? `nationality = '${req.body.nationality}', ` : ``
+    queryText += req.body.mainIngredient ? `main_ingr = '${req.body.mainIngredient}', ` : ``
+    queryText += req.body.ingredient ? `ingr = '${req.body.ingredient}', ` : ``
+    queryText += req.body.foodTime ? `food_time = '${req.body.foodTime}', ` : ``
+    queryText += req.body.difficulty ? `difficulty= '${req.body.difficulty}', ` : ``
+    queryText += req.body.timeTaken ? `time_taken = '${req.body.timeTaken}', ` : ``
+    queryText += ` Where id=${id};`
 
     const result = await queryHandler(queryText)
 
@@ -80,8 +91,31 @@ const updateRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        res.send({ message: result.message.rows[0] })
+        res.send({ message: `Recipe with id ${id} updated` })
     }
 })
 
-export { getAllRecipes, postRecipe, getRecipe }
+const deleteRecipe = asyncHandler(async (req, res) =>
+{
+    const id = req.params.id
+    const queryText = `DELETE FROM recipes WHERE id=${id};`
+    const result = await queryHandler(queryText)
+
+    if (result.flag === false)
+    {
+        res.status(500).send({
+            message: result.message.message,
+            stack: process.env.NODE_ENV === "development" ? result.message.stack : 0
+        })
+    }
+    else
+    {
+        res.send({ message: `Recipe with id ${id} deleted` })
+    }
+})
+
+export
+{
+    getAllRecipes, postRecipe,
+    getRecipe, updateRecipe, deleteRecipe
+}
