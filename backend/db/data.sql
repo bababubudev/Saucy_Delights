@@ -11,7 +11,7 @@ CREATE TABLE users(
 CREATE TABLE recipes(
     id SERIAL PRIMARY KEY,
     name VARCHAR(32) NOT NULL,
-    description VARCHAR(500),
+    description VARCHAR(500) NOT NULL,
     nationality VARCHAR(32),
     main_ingr VARCHAR(32),
     ingr VARCHAR(32) ARRAY,
