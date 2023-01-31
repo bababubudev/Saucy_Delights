@@ -4,12 +4,14 @@ import
     loginUser,
     registerUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUser
 } from '../controllers/userController.js'
+import { protect } from "../middleware/authMiddleware.js"
 
 const router = express.Router()
 
-router.route('/').get(loginUser).post(registerUser)
-router.route('/:id').put(updateUser).delete(deleteUser)
+router.route('/').get(loginUser).post(registerUser).put(protect,updateUser).delete(protect,deleteUser)
+router.route('/me').get(protect,getUser)
 
 export { router }
