@@ -11,8 +11,3 @@ export const pool = new Pool({
   password: process.env.DB_PASSWORD
 })
 
-// export function query(text,params)
-// {
-//     pool.query(text,params)
-// }
-

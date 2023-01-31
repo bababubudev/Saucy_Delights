@@ -1,27 +1,41 @@
 import asyncHandler from "express-async-handler"
 import { queryHandler } from "../db/queryhandler.js"
+import bcrypt from "bcryptjs"
 
 // @desc Get all users (for now!!)
 // @route GET /api/users
 // @access Public
-const getUsers = asyncHandler(async (req, res) =>
+const loginUser = asyncHandler(async (req, res) =>
 {   
-    const queryText='SELECT * FROM users'
-    queryHandler(queryText,req,res,'')
+    const queryText=`SELECT password FROM users WHERE email='${req.body.email}'`
+    let result=await queryHandler(queryText)
+    if (result.flag===false) res.status(500).send({message:result.message.message,stack: process.env.NODE_ENV=="development" ? result.message.stack : 0})
+    else 
+    {
+        console.log(result.message.rows[0].password)
+        res.send({message:`user ${req.body.email} ${req.body.name} get`})
+    }
 })
 
 // @desc Set user 
 // @route POST /api/users
 // @access Public
 //DOESNT WORK FOR NOW LMAO
-const setUser = asyncHandler(async (req, res) =>
+const registerUser = asyncHandler(async (req, res) =>
 {   
-    if (!(req.body.name||req.body.email)){
+    if (!(req.body.name||req.body.email||req.body.password)){
         res.status(400)
-        throw new Error("Please add a text field")
+        throw new Error("Not enough values")
     }
-    const queryText=`INSERT INTO users (email,name,password) VALUES ('${req.body.email}', '${req.body.name}', '${req.body.password}')`
-    queryHandler(queryText,req,res,`user ${req.body.email} set`)
+
+    const salt=await bcrypt.genSalt(10)
+    const hashedPassword= await bcrypt.hash(req.body.password,salt)
+    
+    const queryText=`INSERT INTO users (email,name,password) VALUES ('${req.body.email}', '${req.body.name}', '${hashedPassword}');`
+    let result= await queryHandler(queryText,res)
+
+    if (result.flag===false) res.status(500).send({message:result.message.message,stack: process.env.NODE_ENV=="development" ? result.message.stack : 0})
+    else res.send({message:`user ${req.body.email} set`})
 })
 
 // @desc Update user 
@@ -38,8 +52,10 @@ const updateUser = asyncHandler(async (req, res) =>
     queryText+=req.body.comments ? `comments = '${req.body.comments}', ` : ``    
     queryText=queryText.substring(0,queryText.length-2)
     queryText+=` WHERE id=${req.params.id}`
-
-    queryHandler(queryText,req,res,`User with id ${req.params.id} updated`)
+    
+    let result=await queryHandler(queryText)
+    if (result.flag===false) res.status(500).send({message:result.message.message,stack: process.env.NODE_ENV=="development" ? result.message.stack : 0})
+    else res.send({message:`User with id ${req.params.id} updated`})
 })
 
 // @desc Delete user 
@@ -48,13 +64,16 @@ const updateUser = asyncHandler(async (req, res) =>
 const deleteUser = asyncHandler(async (req, res) =>
 {
     const queryText=`DELETE FROM users WHERE id=${req.params.id}`
-    queryHandler(queryText,req,res,`id ${req.params.id} deleted`)
+    let result = await queryHandler(queryText)
+    
+    if (result.flag===false) res.status(500).send({message:result.message.message,stack: process.env.NODE_ENV=="development" ? result.message.stack : 0})
+    else res.send({message:`User with id ${req.params.id} deleted`})
 })
 
 export
 {
-    getUsers,
-    setUser,
+    loginUser,
+    registerUser,
     updateUser,
     deleteUser
 }
