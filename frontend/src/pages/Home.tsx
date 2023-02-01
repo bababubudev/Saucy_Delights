@@ -1,7 +1,9 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import RecipeCategory from "../components/RecipeCategory";
+import "../styles/home.scss"
 
 import data from "../app/data/data.json";
 // interface Recipe {
@@ -15,16 +17,16 @@ import data from "../app/data/data.json";
 function Home() {
   return (
     <>
-      <section className="create-recipe-button">
+      <Link to="create-recipe" className="create-recipe-button">
         <button>
-          Create Recipe <FontAwesomeIcon icon={faPlus} />
+          Create Recipe <FontAwesomeIcon icon={faPlus} className="plus-icon" />
         </button>
-      </section>
+      </Link>
       <section className="top-recipe-section">
-        <RecipeCategory title="Test" ></RecipeCategory>
+        <RecipeCategory title="Popular Category" ></RecipeCategory>
       </section>
       <section className="recommended-recipe-section">
-        <RecipeCategory title="Recommended" ></RecipeCategory>
+        <RecipeCategory title="Recommended Category" ></RecipeCategory>
       </section>
     </>
   );
