@@ -23,6 +23,9 @@ function Home() {
       <section className="top-recipe-section">
         <RecipeCategory title="Test" ></RecipeCategory>
       </section>
+      <section className="recommended-recipe-section">
+        <RecipeCategory title="Recommended" ></RecipeCategory>
+      </section>
     </>
   );
 }
