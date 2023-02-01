@@ -9,19 +9,24 @@ import jwt from "jsonwebtoken"
 const loginUser = asyncHandler(async (req, res) =>
 {
     const queryText = `SELECT email, name, created_recipes, fav_recipes, comments, password FROM users WHERE email='${req.body.email}'`
+    if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else 
     {   
-        let passwordFromDB=result.message.rows[0].password
-        delete result.message.rows[0].password;
-        if ((passwordFromDB)&&(await bcrypt.compare(req.body.password,passwordFromDB)))
+        if (!result.message.rows[0]) res.send({message:"invalid credentials"})
+        else
         {
-            const accesstoken=await generateToken(req.body.email)
-            res.send({ user:result.message.rows[0],token:accesstoken})
+            let passwordFromDB=result.message.rows[0].password
+            delete result.message.rows[0].password;
+            if ((passwordFromDB)&&(await bcrypt.compare(req.body.password,passwordFromDB)))
+            {
+                const accesstoken=await generateToken(req.body.email,req.body.remembered)
+                res.send({ user:result.message.rows[0],token:accesstoken})
+            }
+            else    
+                res.send({message:"invalid credentials"})
         }
-        else    
-            res.send({message:"invalid credentials"})
     }
 })
 
@@ -39,14 +44,15 @@ const registerUser = asyncHandler(async (req, res) =>
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
-    const queryText = `INSERT INTO users (email,name,password) VALUES ('${req.body.email}', '${req.body.name}', '${hashedPassword}');`
+    const queryText = `INSERT INTO users (email,name,password) VALUES ('${req.body.email}', '${req.body.name}', '${hashedPassword}')`
+    if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
 
     if (!result.flag) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else 
     {   
         const user={"email":req.body.email,"name":req.body.name,"created_recipes":null,"fav_recipes":null,"comment":null}
-        const accesstoken=await generateToken(req.body.email)
+        const accesstoken=await generateToken(req.body.email,req.body.remembered)
         res.send({ user:user,token:accesstoken})
     }
 })
@@ -66,7 +72,7 @@ const updateUser = asyncHandler(async (req, res) =>
     queryText += req.body.comments ? `comments = '${req.body.comments}', ` : ``
     queryText = queryText.substring(0, queryText.length - 2)
     queryText += ` WHERE email='${email}'`
-    console.log(queryText)
+    if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else res.send({ message: `User with email ${email} updated` })
@@ -79,6 +85,7 @@ const deleteUser = asyncHandler(async (req, res) =>
 {   
     let email=req.user.email
     const queryText = `DELETE FROM users WHERE email='${email}'`
+    if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
 
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
@@ -91,6 +98,7 @@ const deleteUser = asyncHandler(async (req, res) =>
 const getUser = asyncHandler(async (req, res) =>
 {
     const queryText = `SELECT email, name, created_recipes, fav_recipes, comments FROM users WHERE email='${req.user.email}'`
+    if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else 
@@ -99,7 +107,8 @@ const getUser = asyncHandler(async (req, res) =>
     }
 })
 
-const generateToken = async (email)=>{
+const generateToken = async (email,remembered)=>{
+    if (!remembered) return jwt.sign({email},process.env.ACCESS_TOKEN_SECRET,{expiresIn:"10m"})
     return jwt.sign({email},process.env.ACCESS_TOKEN_SECRET)
 }
 
