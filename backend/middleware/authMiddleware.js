@@ -16,16 +16,16 @@ export const protect = asyncHandler( async (req, res, next) => {
             {
                 req.user=result.message.rows[0]
                 if(req.user) next()
-                else res.send({message:"Not authorized"})  
+                else res.send({message:"Not authorized", stack: process.env.NODE_ENV == "development" ? result.message.stack : 0})  
                 
             }
-            else res.send({message:"Not authorized"})  
+            else res.send({message:"Not authorized", stack: process.env.NODE_ENV == "development" ? result.message.stack : 0})  
             
         } catch (err)
         {   
             console.log(err)
             res.status(401)
-            res.send({message:"Not authorized"})
+            res.send({message:"Not authorized", stack: process.env.NODE_ENV == "development" ? err.stack : 0})
         }
     }
     if (!token)

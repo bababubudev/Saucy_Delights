@@ -52,7 +52,7 @@ const registerUser = asyncHandler(async (req, res) =>
     else 
     {   
         const user={"email":req.body.email,"name":req.body.name,"created_recipes":null,"fav_recipes":null,"comment":null}
-        const accesstoken=await generateToken(req.body.email,req.body.remembered)
+        const accesstoken=await generateToken(req.body.email,false)
         res.send({ user:user,token:accesstoken})
     }
 })
@@ -67,11 +67,12 @@ const updateUser = asyncHandler(async (req, res) =>
     queryText += req.body.email ? `email = '${req.body.email}', ` : ``
     queryText += req.body.name ? `name = '${req.body.name}', ` : ``
     queryText += req.body.password ? `password = '${req.body.password}', ` : ``
-    queryText += req.body.created_recipes ? `created_recipes = '${req.body.created_recipes}', ` : ``
-    queryText += req.body.fav_recipes ? `fav_recipes = '${req.body.fav_recipes}', ` : ``
-    queryText += req.body.comments ? `comments = '${req.body.comments}', ` : ``
+    queryText += req.body.created_recipes ? `created_recipes = array_append(created_recipes,'${req.body.created_recipes}'), ` : ``
+    queryText += req.body.fav_recipes ? `fav_recipes = array_append(fav_recipes,'${req.body.fav_recipes}'), ` : ``
+    queryText += req.body.comments ? `comments = array_append(comments,'${req.body.comments}'), ` : ``
     queryText = queryText.substring(0, queryText.length - 2)
     queryText += ` WHERE email='${email}'`
+    console.log(queryText)
     if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
