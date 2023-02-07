@@ -67,9 +67,21 @@ const updateUser = asyncHandler(async (req, res) =>
     queryText += req.body.email ? `email = '${req.body.email}', ` : ``
     queryText += req.body.name ? `name = '${req.body.name}', ` : ``
     queryText += req.body.password ? `password = '${req.body.password}', ` : ``
-    queryText += req.body.created_recipes ? `created_recipes = array_append(created_recipes,'${req.body.created_recipes}'), ` : ``
-    queryText += req.body.fav_recipes ? `fav_recipes = array_append(fav_recipes,'${req.body.fav_recipes}'), ` : ``
-    queryText += req.body.comments ? `comments = array_append(comments,'${req.body.comments}'), ` : ``
+    if (req.body.created_recipes>0)
+        queryText += req.body.created_recipes ? `created_recipes = array_append(created_recipes,'${Math.abs(req.body.created_recipes)}'), ` : ``
+    else
+        queryText += req.body.created_recipes ? `created_recipes = array_remove(created_recipes,'${Math.abs(req.body.created_recipes)}'), ` : ``
+    
+    if (req.body.fav_recipes>0)
+        queryText += req.body.fav_recipes? `fav_recipes = array_append(fav_recipes,'${Math.abs(req.body.fav_recipes)}'), ` : ``
+    else
+        queryText += req.body.fav_recipes ? `fav_recipes = array_remove(fav_recipes,'${Math.abs(req.body.fav_recipes)}'), ` : ``
+    
+    if (req.body.comments>0)
+        queryText += req.body.comments ? `comments = array_append(comments,'${Math.abs(req.body.comments)}'), ` : ``
+    else
+        queryText += req.body.comments ? `comments = array_remove(comments,'${Math.abs(req.body.comments)}'), ` : ``
+    console.log(queryText)
     queryText = queryText.substring(0, queryText.length - 2)
     queryText += ` WHERE email='${email}'`
     console.log(queryText)
