@@ -81,10 +81,8 @@ const updateUser = asyncHandler(async (req, res) =>
         queryText += req.body.comments ? `comments = array_append(comments,'${Math.abs(req.body.comments)}'), ` : ``
     else
         queryText += req.body.comments ? `comments = array_remove(comments,'${Math.abs(req.body.comments)}'), ` : ``
-    console.log(queryText)
     queryText = queryText.substring(0, queryText.length - 2)
     queryText += ` WHERE email='${email}'`
-    console.log(queryText)
     if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
