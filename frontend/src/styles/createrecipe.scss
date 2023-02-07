@@ -1,6 +1,79 @@
+@import "./variables";
+
 .create-recipe {
-    h1 {
-        font-size:1.5rem;
-        margin-left:2rem;
+  h1 {
+    font-size: 1.5rem;
+    margin-left: 2rem;
+  }
+
+  .recipe-steps-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-width: 275px;
+    max-width: 30%;
+    margin-left: 2rem;
+    margin-top: 1rem;
+    margin-bottom:3rem;
+
+    label {
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      margin-left: 0.1rem;
     }
+    textarea {
+      border: 1.5px rgb(18, 22, 25, 0.5) solid;
+      border-radius: 0.5rem;
+      padding: 0.1rem 0.5rem;
+      font-size: 1.2rem;
+      margin-top: 0.1rem;
+      transition: all 0.2s ease-in-out;
+      outline: none;
+      font-size: 1rem;
+      // resize: vertical;
+    }
+
+    textarea:focus {
+      border: 1.5px $main-color solid;
+      box-shadow: 0px 0px 3px $main-color;
+    }
+
+    textarea::placeholder {
+      font-size: 1rem;
+    }
+
+    .wrong-textarea {
+      border: 1.5px $accent-color solid;
+      box-shadow: 0px 0px 3px $accent-color;
+      margin-top: 1rem;
+    }
+  }
+
+  .recipe-cuisine-wrapper,
+  .recipe-difficulty-wrapper {
+    margin-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 275px;
+    max-width: 30%;
+    margin-left: 2rem;
+    margin-top: 1rem;
+
+    label {
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      margin-left: 0.1rem;
+    }
+
+    select {
+      padding: 0.4rem 0.5rem;
+      border-radius: 0.5em;
+      border: 1px solid rgb(18, 22, 25, 0.5);
+      font-size: 1em;
+    }
+
+    select:focus {
+      border: 1px solid $main-color;
+      box-shadow: 0px 0px 3px $main-color;
+    }
+  }
 }

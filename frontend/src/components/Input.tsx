@@ -8,6 +8,7 @@ interface InputProps {
   inputId: string;
   //   inputOnChange: string;
   inputValue: string;
+  accept?: string;
 }
 
 function Input(props: InputProps) {
