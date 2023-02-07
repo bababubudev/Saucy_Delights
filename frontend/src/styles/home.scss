@@ -1,6 +1,7 @@
 @import "./variables.scss";
 
 .create-recipe-button {
+  display:inline-block;
   button {
     font-size: 1.1rem;
     font-weight:600;
