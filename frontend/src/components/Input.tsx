@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "../styles/input.scss"
+import "../styles/input.scss";
 
 interface InputProps {
   inputTitle: string;
@@ -9,7 +9,6 @@ interface InputProps {
   //   inputOnChange: string;
   inputValue: string;
 }
-
 
 function Input(props: InputProps) {
   return (
@@ -23,7 +22,9 @@ function Input(props: InputProps) {
         value={props.inputValue}
         required
       />
-      <p>Verifying <div className="lds-spinner"></div></p>
+      <p className="verifying">
+        Verifying <span className="loader"></span>
+      </p>
     </div>
   );
 }

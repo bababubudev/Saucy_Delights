@@ -1,26 +1,26 @@
 @import "./variables.scss";
 
 .create-recipe-button {
-
-    button {
-        font-size:1.15rem;
-        font-weight:600;
-        margin:1rem 0;
-        margin-left:1rem;
-        padding:0.5rem 1rem;
-        border:none;
-        border-radius: 0.5rem;
-        background:linear-gradient(4deg, rgba(247,179,43,1) 0%, rgba(247,44,37,1) 56%);
-        color: $light-color;
-        cursor: pointer;
-        display:flex;
-        align-items: center;
-        &:hover {
-            background: linear-gradient(149deg, rgba(247,179,43,1) 24%, rgba(247,44,37,1) 75%);
-            opacity:0.8;
-        }
-        .plus-icon {
-            margin-left:0.5rem;
-        }
+  button {
+    font-size: 1.1rem;
+    font-weight:600;
+    margin: 1rem 0;
+    margin-top: 1.5rem;
+    margin-left:2rem;
+    padding: 0.25rem 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: #ffe53b;
+    background-image: linear-gradient(147deg, #ffe53b 0%, #ff2525 74%);
+    color: $light-color;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    &:hover {
+        opacity: 0.8;
     }
+  }
+  .plus-icon {
+    margin-left: 0.5rem;
+  }
 }
