@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import Input from "../components/Input";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -8,7 +9,6 @@ function Login() {
   });
 
   const { email, password } = formData;
-
 
   function onChangeHandler(e) {
     setFormData((prevState) => ({
@@ -24,23 +24,22 @@ function Login() {
     <>
       <section className="form">
         <form onSubmit={onSubmitHandler}>
-    
-          <input
-            type="text"
-            id="email"
-            name="email"
-            value={email}
-            placeholder="Email"
-            onChange={onChangeHandler}
-          />
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={password}
-            placeholder="Password"
-            onChange={onChangeHandler}
-          />
+          <Input
+            inputTitle="Email"
+            inputType="text"
+            inputPlaceHolder="example@gmail.com"
+            inputId="login-email"
+            inputValue={email}
+          ></Input>
+        
+          <Input
+            inputTitle="Password"
+            inputType="password"
+            inputPlaceHolder=""
+            inputId="login-password"
+            inputValue={password}
+          ></Input>
+        
 
           <button type="submit">Login</button>
         </form>

@@ -1,30 +1,78 @@
+@import "./variables.scss";
+
 .recipe-card {
   display: grid;
   font-family: "Source Sans Pro", sans-serif;
-  grid-template-columns: 40% 1fr;
-  grid-template-rows: 25% 15% 1fr;
-  width:95%;
-  margin:1rem auto;
-  @media(min-width:800px) {
-    display:flex;
+  grid-template-columns: 45% 1fr;
+  grid-template-rows: 25% 20% 1fr;
+  width: 350px;
+  margin: 1rem auto;
+  background-color: $light-color;
+  border-radius: 0.5rem;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+
+  @media (min-width: 800px) {
+    display: inline-flex;
     flex-direction: column;
+    width: inherit;
+    gap: 1rem;
+    margin-right: 1rem;
+    width:180px;
   }
+
   .img-wrapper {
     grid-row: 1/4;
     grid-column: 1/2;
-    width:125px;
+    width: 150px;
+    @media (min-width: 800px) {
+      width: 180px;
+    }
+
     img {
-        object-fit: cover;
-        width:125px;
-        aspect-ratio: 1/1;
+      object-fit: cover;
+      width: 150px;
+      aspect-ratio: 1/1;
+      border-radius: 0.5rem 0 0 0.5rem;
+      @media (min-width: 800px) {
+        border-radius: 0.5rem 0.5rem 0 0;
+        width:180px;
+        aspect-ratio: 6/5;
+
+      }
     }
   }
   .rating-wrapper {
-    display:flex;
+    display: flex;
+    align-items: center;
+    margin-left:0.5rem;
+    p {
+      margin-top: 0.5rem;
+      margin-right: 0.3rem;
+      @media (min-width: 800px) {
+        margin-top: 0;
+        padding-bottom:1rem;
+        margin-left:0;
+        &:nth-child(1) {
+          margin-left:0.5rem;
+        }
+      }
+    }
   }
 
   .card-title {
-    font-size:1.15rem;
-  }
+    font-size: 1.15rem;
+    padding-top: 0.6rem;
+    margin-left:0.5rem;
 
+    @media (min-width: 800px) {
+      padding-top: 0;
+      margin-left:0;
+      margin-left:0.5rem;
+      font-size:2ch;
+    }
+  }
+}
+a {
+  text-decoration: none;
+  color: $dark-color;
 }
