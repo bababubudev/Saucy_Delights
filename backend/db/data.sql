@@ -19,5 +19,5 @@ CREATE TABLE recipes(
     difficulty INTEGER,
     time_taken INTEGER,
     rating INTEGER,
-    created_at DATE
+    created_at DATE NOT NULL DEFAULT CURRENT_DATE
 );

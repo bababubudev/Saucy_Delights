@@ -49,7 +49,18 @@ const postRecipe = asyncHandler(async (req, res) =>
         throw new Error("Name for the recipe is required!")
     }
 
-    const queryText = `INSERT INTO recipes (name,description) VALUES ('${req.body.name}', '${req.body.description}');`
+    const recipeObj = {
+        "name": req.body.name ? `{req.body.name}` : ``,
+        "description": req.body.description ? `{req.body.description}` : ``,
+        "nationality": req.body.nationality ? `{req.body.nationality}` : ``,
+        "main_ingr": req.body.main_ingr ? `{req.body.main_ingr}` : ``,
+        "food_time": req.body.food_time ? `{req.body.food_time}` : ``,
+        "difficulty": req.body.difficulty ? `{req.body.difficulty}` : ``,
+        "time_taken": req.body.time_taken ? `{req.body.time_taken}` : ``,
+        "rating": req.body.rating ? `{req.body.rating}` : ``
+    }
+
+    let queryText = `INSERT INTO recipes (${Object.keys(recipeObj)}) VALUES ('${Object.values(recipeObj)}');`
     const result = await queryHandler(queryText)
 
     if (result.flag === false)
