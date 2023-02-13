@@ -106,3 +106,6 @@ dist
 #env files
 .env
 *.env
+
+#rest api
+*.rest
