@@ -35,7 +35,6 @@ const getRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        console.log(result.message.rows[0])
         res.send({ message: result.message.rows[0] })
     }
 
@@ -43,10 +42,12 @@ const getRecipe = asyncHandler(async (req, res) =>
 
 const postRecipe = asyncHandler(async (req, res) =>
 {
-    const recipeObj = req.body;
-    const recipeKeys = Object.keys(recipeObj);
+    const recipeObj = req.body
+    const recipeKeys = Object.keys(recipeObj)
 
     const requiredFields = ["name", "description", "ingr", "difficulty"]
+
+    // NOTE: This validation can be worked on more!
     const isValidObj = requiredFields.every(key => recipeKeys.includes(key)) && recipeKeys.every(key => recipeObj[key] != "")
 
     if (!isValidObj)
@@ -55,10 +56,10 @@ const postRecipe = asyncHandler(async (req, res) =>
         throw new Error("Please fill in the required fields!")
     }
 
-    const queryParam = Object.values(recipeObj).map(value => isString(value) ? `'${value}'` : value)
-    const queryText = `INSERT INTO recipes (${recipeKeys}) VALUES (${queryParam}) RETURNING *;`
+    const queryIndices = queryParam.map(value => `$${queryParam.findIndex(elem => elem == value) + 1}`).join(',')
+    const queryText = `INSERT INTO recipes (${recipeKeys}) VALUES (${queryIndices}) RETURNING *;`
 
-    const result = await queryHandler(queryText)
+    const result = await queryHandler(queryText, Object.values(recipeObj))
 
     if (result.flag === false)
     {
@@ -124,10 +125,22 @@ const deleteRecipe = asyncHandler(async (req, res) =>
     }
 })
 
-function isString(x)
-{
-    return Object.prototype.toString.call(x) === "[object String]"
-}
+// function isString(x)
+// {
+//     return Object.prototype.toString.call(x) === "[object String]"
+// }
+
+// async function isArrayElem(x)
+// {
+//     try
+//     {
+//         return Array.isArray(JSON.parse(x));
+//     }
+//     catch (err)
+//     {
+//         return false;
+//     }
+// }
 
 export
 {
