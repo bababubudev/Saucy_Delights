@@ -15,7 +15,6 @@ const getAllRecipes = asyncHandler(async (req, res) =>
     }
     else
     {
-        console.log(result.message.rows[0])
         res.send({ message: result.message.rows })
     }
 })
@@ -23,9 +22,9 @@ const getAllRecipes = asyncHandler(async (req, res) =>
 const getRecipe = asyncHandler(async (req, res) =>
 {
     const id = req.params.id
-    const queryText = `SELECT * FROM recipes WHERE id=${id};`
+    const queryText = `SELECT * FROM recipes WHERE id=$1;`
 
-    const result = await queryHandler(queryText)
+    const result = await queryHandler(queryText, [id])
     if (result.flag === false)
     {
         res.status(500).send({
@@ -35,7 +34,6 @@ const getRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        console.log(result.message.rows[0])
         res.send({ message: result.message.rows[0] })
     }
 
@@ -43,14 +41,25 @@ const getRecipe = asyncHandler(async (req, res) =>
 
 const postRecipe = asyncHandler(async (req, res) =>
 {
-    if (!(req.body.name || req.body.description))
+    const recipeObj = req.body
+    const recipeKeys = Object.keys(recipeObj)
+    const recipeValues = Object.values(recipeObj)
+
+    const requiredFields = ["name", "description", "ingr", "difficulty"]
+
+    // NOTE: This validation can be worked on more!
+    const isValidObj = requiredFields.every(key => recipeKeys.includes(key)) && recipeKeys.every(key => recipeObj[key] != "")
+
+    if (!isValidObj)
     {
         res.status(400)
-        throw new Error("Name for the recipe is required!")
+        throw new Error("Please fill in the required fields!")
     }
 
-    const queryText = `INSERT INTO recipes (name,description) VALUES ('${req.body.name}', '${req.body.description}');`
-    const result = await queryHandler(queryText)
+    const queryIndices = recipeValues.map(value => `$${recipeValues.findIndex(elem => elem == value) + 1}`).join(',')
+    const queryText = `INSERT INTO recipes (${recipeKeys}) VALUES (${queryIndices}) RETURNING *;`
+
+    const result = await queryHandler(queryText, recipeValues)
 
     if (result.flag === false)
     {
@@ -67,39 +76,55 @@ const postRecipe = asyncHandler(async (req, res) =>
 
 const updateRecipe = asyncHandler(async (req, res) =>
 {
-    const id = req.params.id
-
-    let queryText = `UPDATE recipes SET `
-    queryText += req.body.name ? `name = '${req.body.name}', ` : ``
-    queryText += req.body.description ? `description = '${req.body.description}', ` : ``
-    queryText += req.body.nationality ? `nationality = '${req.body.nationality}', ` : ``
-    queryText += req.body.mainIngredient ? `main_ingr = '${req.body.mainIngredient}', ` : ``
-    queryText += req.body.ingredient ? `ingr = '${req.body.ingredient}', ` : ``
-    queryText += req.body.foodTime ? `food_time = '${req.body.foodTime}', ` : ``
-    queryText += req.body.difficulty ? `difficulty= '${req.body.difficulty}', ` : ``
-    queryText += req.body.timeTaken ? `time_taken = '${req.body.timeTaken}', ` : ``
-    queryText += ` Where id=${id};`
-
-    const result = await queryHandler(queryText)
+    const unchangeables = ["id", "rating", "created_at"]
+    const result = await queryHandler(`SELECT * FROM recipes WHERE id=$1;`, [req.params.id])
 
     if (result.flag === false)
     {
-        res.status(500).send({
+        return res.status(500).send({
             message: result.message.message,
-            stack: process.env.NODE_ENV === "development" ? result.message.stack : 0
+            stack: process.env.NODE_ENV == "development" ? result.message.stack : 0
+        })
+    }
+
+    const queryData = result.message.rows[0]
+    const requestedKeys = Object.keys(req.body)
+
+    const isValidObj = requestedKeys.every(key => !unchangeables.includes(key) && Object.keys(queryData).includes(key)) && requestedKeys.every(key => req.body[key] != "")
+
+    if (!isValidObj)
+    {
+        res.status(400)
+        throw new Error("Sent request is not valid!")
+    }
+
+    let keyValue = `UPDATE recipes SET `
+
+    requestedKeys.forEach((key, index) => keyValue += index == requestedKeys.length - 1 ? `${key}=$${index + 1} ` : `${key}=$${index + 1}, `)
+    keyValue += `WHERE id=$${requestedKeys.length + 1}`
+
+    const params = Object.values(req.body)
+    params.push(req.params.id)
+
+    const newResult = await queryHandler(keyValue, params)
+    if (newResult.flag === false)
+    {
+        res.status(500).send({
+            message: newResult.message.message,
+            stack: process.env.NODE_ENV === "development" ? newResult.message.stack : 0
         })
     }
     else
     {
-        res.send({ message: `Recipe with id ${id} updated` })
+        res.send({ message: `Recipe named [${result.message.rows[0].name.toUpperCase()} ] updated` })
     }
 })
 
 const deleteRecipe = asyncHandler(async (req, res) =>
 {
     const id = req.params.id
-    const queryText = `DELETE FROM recipes WHERE id=${id};`
-    const result = await queryHandler(queryText)
+    const queryText = `DELETE FROM recipes WHERE id = $1 RETURNING *; `
+    const result = await queryHandler(queryText, [id])
 
     if (result.flag === false)
     {
@@ -110,7 +135,7 @@ const deleteRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        res.send({ message: `Recipe with id ${id} deleted` })
+        res.send({ message: `Recipe named[${result.message.rows[0].name.toUpperCase()} ]deleted` })
     }
 })
 

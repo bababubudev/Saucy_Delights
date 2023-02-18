@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+
 
 function Navbar() {
   return (
@@ -42,7 +44,10 @@ function Navbar() {
               </span>
             </Link>
           </li>
-          <input type="search" />
+          <div className="search">
+            <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon"/>
+            <input type="search" placeholder="Search for a recipe" />
+          </div>
         </ul>
       </nav>
     </>

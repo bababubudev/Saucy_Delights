@@ -8,6 +8,7 @@ import CreateRecipe from "./pages/CreateRecipe";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import "./styles/global.scss"
+import RecipeDetails from "./components/RecipeDetails";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<Login/>}></Route>
           <Route path="/register" element={<Register/>}></Route>
           <Route path="/create-recipe" element={<CreateRecipe/>}></Route>
+          <Route path="/recipe/:id/:recipeName" element={<RecipeDetails></RecipeDetails>}></Route>
         </Routes>
       </Router>
     </>

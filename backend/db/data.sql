@@ -18,6 +18,18 @@ CREATE TABLE recipes(
     food_time CHAR,
     difficulty INTEGER,
     time_taken INTEGER,
-    rating INTEGER,
-    created_at DATE
+    created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+);
+
+
+CREATE TABLE feedbacks(
+    id SERIAL PRIMARY KEY,
+    rating INTEGER NOT NULL,
+    
+    user_id INTEGER NOT NULL,
+    recipe_id INTEGER NOT NULL,
+    comment VARCHAR(500),
+
+    CONSTRAINT recipes FOREIGN KEY(recipe_id) REFERENCES recipes(id),
+    CONSTRAINT users FOREIGN KEY(user_id) REFERENCES users(id)
 );

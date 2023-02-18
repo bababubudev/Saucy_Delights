@@ -1,0 +1,20 @@
+@import "./variables.scss";
+
+.recipe-category {
+    margin:1rem 0;
+    margin-left:0rem;
+    @media (min-width: 800px) {
+        margin-left:2rem;
+      }
+    .category-title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 1rem 0;
+        margin-left:2rem;
+
+        @media (min-width: 800px) {
+            font-size: 1.75rem;
+            margin-left:0rem;
+          }
+    }
+}
