@@ -1,11 +1,9 @@
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     email VARCHAR(32) NOT NULL UNIQUE,
-    name VARCHAR(32) NOT NULL,
+    name VARCHAR(32) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
-    created_recipes INTEGER[],
-    fav_recipes INTEGER[],
-    comments INTEGER[]
+    fav_recipes INTEGER[]
 );
 
 CREATE TABLE recipes(

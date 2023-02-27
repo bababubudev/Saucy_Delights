@@ -3,12 +3,12 @@ import { queryHandler } from "../db/queryhandler.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-// @desc Log in user with email and password
+// @desc Log in user with name and password
 // @route GET /api/users
 // @access Public
 const loginUser = asyncHandler(async (req, res) =>
 {
-    const queryText = `SELECT email, name, created_recipes, fav_recipes, comments, password FROM users WHERE email='${req.body.email}'`
+    const queryText = `SELECT email, name, fav_recipes, password FROM users WHERE name='${req.body.name}'`
     if (queryText.includes(";")) return res.status(400).send({ message: "Query got damaged" })
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
@@ -21,7 +21,7 @@ const loginUser = asyncHandler(async (req, res) =>
             delete result.message.rows[0].password;
             if ((passwordFromDB) && (await bcrypt.compare(req.body.password, passwordFromDB)))
             {
-                const accesstoken = await generateToken(req.body.email, req.body.remembered)
+                const accesstoken = await generateToken(req.body.name, req.body.remembered)
                 res.send({ user: result.message.rows[0], token: accesstoken })
             }
             else
@@ -51,9 +51,18 @@ const registerUser = asyncHandler(async (req, res) =>
     if (!result.flag) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
     else 
     {
-        const user = { "email": req.body.email, "name": req.body.name, "created_recipes": null, "fav_recipes": null, "comment": null }
-        const accesstoken = await generateToken(req.body.email, false)
-        res.send({ user: user, token: accesstoken })
+        let updated =await queryHandler(`UPDATE users SET fav_recipes='{}' WHERE name='${req.body.name}'`)
+        if (!updated.flag) {
+            await queryHandler(`DELETE FROM users WHERE name='${req.body.name}'`)
+            res.status(500).send({ message: updated.message.message, stack: process.env.NODE_ENV == "development" ? updated.message.stack : 0 })
+        }
+        else 
+        {
+            const user = { "email": req.body.email, "name": req.body.name, "fav_recipes": null}
+            const accesstoken = await generateToken(req.body.name, false)
+            res.send({ user: user, token: accesstoken })
+        }
+        
     }
 })
 
@@ -62,31 +71,29 @@ const registerUser = asyncHandler(async (req, res) =>
 // @access Private
 const updateUser = asyncHandler(async (req, res) =>
 {
-    let email = req.user.email
+    let name = req.user.name
     let queryText = `UPDATE users SET `
+    if (req.body.email)
     queryText += req.body.email ? `email = '${req.body.email}', ` : ``
-    queryText += req.body.name ? `name = '${req.body.name}', ` : ``
-    queryText += req.body.password ? `password = '${req.body.password}', ` : ``
-    if (req.body.created_recipes>0)
-        queryText += req.body.created_recipes ? `created_recipes = array_append(created_recipes,'${Math.abs(req.body.created_recipes)}'), ` : ``
-    else
-        queryText += req.body.created_recipes ? `created_recipes = array_remove(created_recipes,'${Math.abs(req.body.created_recipes)}'), ` : ``
+    if (req.body.password)
+    {   
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        queryText += req.body.password ? `password = '${hashedPassword}', ` : ``
+    }
     
-    if (req.body.fav_recipes>0)
-        queryText += req.body.fav_recipes? `fav_recipes = array_append(fav_recipes,'${Math.abs(req.body.fav_recipes)}'), ` : ``
+
+    if (!(req.user.fav_recipes.includes(req.body.fav_recipes)))
+            queryText += req.body.fav_recipes? `fav_recipes = array_append(fav_recipes,'${req.body.fav_recipes}'), ` : ``
     else
-        queryText += req.body.fav_recipes ? `fav_recipes = array_remove(fav_recipes,'${Math.abs(req.body.fav_recipes)}'), ` : ``
-    
-    if (req.body.comments>0)
-        queryText += req.body.comments ? `comments = array_append(comments,'${Math.abs(req.body.comments)}'), ` : ``
-    else
-        queryText += req.body.comments ? `comments = array_remove(comments,'${Math.abs(req.body.comments)}'), ` : ``
+        queryText += req.body.fav_recipes ? `fav_recipes = array_remove(fav_recipes,'${req.body.fav_recipes}'), ` : ``
+
     queryText = queryText.substring(0, queryText.length - 2)
-    queryText += ` WHERE email='${email}'`
+    queryText += ` WHERE name='${name}'`
     if (queryText.includes(";")) return res.status(400).send({message:"Query got damaged"})
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
-    else res.send({ message: `User with email ${email} updated` })
+    else res.send({ message: `User with name ${name} updated` })
 })
 
 // @desc Delete user 
@@ -94,13 +101,13 @@ const updateUser = asyncHandler(async (req, res) =>
 // @access Private
 const deleteUser = asyncHandler(async (req, res) =>
 {
-    let email = req.user.email
-    const queryText = `DELETE FROM users WHERE email='${email}'`
+    let name = req.user.name
+    const queryText = `DELETE FROM users WHERE name='${name}'`
     if (queryText.includes(";")) return res.status(400).send({ message: "Query got damaged" })
     let result = await queryHandler(queryText)
 
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
-    else res.send({ message: `User with email ${email} deleted` })
+    else res.send({ message: `User with name ${name} deleted` })
 })
 
 // @desc Get user info by token
@@ -108,7 +115,7 @@ const deleteUser = asyncHandler(async (req, res) =>
 // @access Private
 const getUser = asyncHandler(async (req, res) =>
 {
-    const queryText = `SELECT email, name, created_recipes, fav_recipes, comments FROM users WHERE email='${req.user.email}'`
+    const queryText = `SELECT email, name, fav_recipes FROM users WHERE name='${req.user.name}'`
     if (queryText.includes(";")) return res.status(400).send({ message: "Query got damaged" })
     let result = await queryHandler(queryText)
     if (result.flag === false) res.status(500).send({ message: result.message.message, stack: process.env.NODE_ENV == "development" ? result.message.stack : 0 })
@@ -118,10 +125,10 @@ const getUser = asyncHandler(async (req, res) =>
     }
 })
 
-const generateToken = async (email, remembered) =>
+const generateToken = async (name, remembered) =>
 {
-    if (!remembered) return jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
-    return jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET)
+    if (!remembered) return jwt.sign({ name }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10m" })
+    return jwt.sign({ name }, process.env.ACCESS_TOKEN_SECRET)
 }
 
 export
