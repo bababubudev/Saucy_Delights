@@ -45,7 +45,7 @@ const postRecipe = asyncHandler(async (req, res) =>
     const recipeKeys = Object.keys(recipeObj)
     const recipeValues = Object.values(recipeObj)
 
-    const requiredFields = ["name", "description", "ingr", "difficulty"]
+    const requiredFields = ["recipe_name", "description", "ingr", "difficulty"]
 
     // NOTE: This validation can be worked on more!
     const isValidObj = requiredFields.every(key => recipeKeys.includes(key)) && recipeKeys.every(key => recipeObj[key] != "")
@@ -76,7 +76,7 @@ const postRecipe = asyncHandler(async (req, res) =>
 
 const updateRecipe = asyncHandler(async (req, res) =>
 {
-    const unchangeables = ["id", "rating", "created_at"]
+    const unchangeables = ["id", "created_at"]
     const result = await queryHandler(`SELECT * FROM recipes WHERE id=$1;`, [req.params.id])
 
     if (result.flag === false)
@@ -116,7 +116,7 @@ const updateRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        res.send({ message: `Recipe named [${result.message.rows[0].name.toUpperCase()} ] updated` })
+        res.send({ message: `Recipe named [${result.message.rows[0].recipe_name.toUpperCase()}] updated!` })
     }
 })
 
@@ -135,7 +135,7 @@ const deleteRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        res.send({ message: `Recipe named[${result.message.rows[0].name.toUpperCase()} ]deleted` })
+        res.send({ message: `Recipe named [${result.message.rows[0].recipe_name.toUpperCase()}]deleted!` })
     }
 })
 

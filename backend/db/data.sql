@@ -10,7 +10,9 @@ CREATE TABLE users(
 
 CREATE TABLE recipes(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(32) NOT NULL,
+    creator_id INTEGER,
+
+    recipe_name VARCHAR(32) NOT NULL,
     description VARCHAR(500) NOT NULL,
     nationality VARCHAR(32),
     main_ingr VARCHAR(32),
@@ -18,7 +20,7 @@ CREATE TABLE recipes(
     food_time CHAR,
     difficulty INTEGER,
     time_taken INTEGER,
-    created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 
@@ -29,7 +31,11 @@ CREATE TABLE feedbacks(
     user_id INTEGER NOT NULL,
     recipe_id INTEGER NOT NULL,
     comment VARCHAR(500),
+    commented_at DATE NOT NULL DEFAULT CURRENT_DATE,
 
     CONSTRAINT recipes FOREIGN KEY(recipe_id) REFERENCES recipes(id),
     CONSTRAINT users FOREIGN KEY(user_id) REFERENCES users(id)
 );
+
+SELECT rating, comment, name, created_at FROM feedbacks INNER JOIN recipes ON feedbacks.recipe_id = recipes.id INNER JOIN users ON feedbacks.user_id = users.id;
+INSERT INTO feedbacks (rating,comment,user_id,recipe_id) VALUES (1, 'Pretty good!', 1, 10);
