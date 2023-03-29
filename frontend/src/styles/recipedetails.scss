@@ -1,0 +1,28 @@
+main {
+    margin-left: 2rem;
+
+  h1 {
+    font-size:1.75rem;
+  }
+
+  header {
+    display:flex;
+    flex-direction: column;
+
+
+    .rating-preview-wrapper {
+        display:flex;  
+        align-items: center; 
+    }
+  }
+}
+
+.img-wrapper {
+    margin-top:2rem;
+    width:100%;
+  img {
+    width: 300px;
+    margin: 0 auto;
+  }
+}
+

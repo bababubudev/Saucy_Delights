@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/recipedetails.scss";
 
 function RecipeDetails() {
   return (
@@ -12,7 +13,7 @@ function RecipeDetails() {
             <p className="number-of-rating">3408</p>
           </div>
           <div className="review-preview-wrapper">
-            <p className="review-count">333</p>
+            <p className="review-count">333 <span>reviews</span></p>
           </div>
         </header>
         <button className="favorite-button">Favorite</button>

@@ -1,7 +1,7 @@
 @import "./variables.scss";
 
 .recipe-card {
-  display: grid;
+  display: flex;
   font-family: "Source Sans Pro", sans-serif;
   grid-template-columns: 45% 1fr;
   grid-template-rows: 25% 20% 1fr;
@@ -14,16 +14,17 @@
   @media (min-width: 800px) {
     display: inline-flex;
     flex-direction: column;
-    width: inherit;
     gap: 1rem;
     margin-right: 1rem;
     width:180px;
+    min-height:250px;
   }
 
   .img-wrapper {
     grid-row: 1/4;
     grid-column: 1/2;
     width: 150px;
+    margin-top:0;
     @media (min-width: 800px) {
       width: 180px;
     }
@@ -32,12 +33,13 @@
       object-fit: cover;
       width: 150px;
       aspect-ratio: 1/1;
+      display:block;
+      height:150px;
       border-radius: 0.5rem 0 0 0.5rem;
       @media (min-width: 800px) {
         border-radius: 0.5rem 0.5rem 0 0;
-        width:180px;
+        width:100%;
         aspect-ratio: 6/5;
-
       }
     }
   }
@@ -60,7 +62,7 @@
   }
 
   .card-title {
-    font-size: 1.15rem;
+    font-size:1rem;
     padding-top: 0.6rem;
     margin-left:0.5rem;
 
@@ -68,7 +70,6 @@
       padding-top: 0;
       margin-left:0;
       margin-left:0.5rem;
-      font-size:2ch;
     }
   }
 }
