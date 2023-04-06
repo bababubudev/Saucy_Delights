@@ -1,22 +1,40 @@
 import React from "react";
+import "../styles/recipedetails.scss";
+import { Link } from "react-router-dom";
+import "../styles/global.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faShare } from "@fortawesome/free-solid-svg-icons";
 
 function RecipeDetails() {
   return (
     <>
+      <Link to="/" className="button back-button">
+        Back
+      </Link>
       <main>
         <h1>Pro Cabonara</h1>
         <header>
           <div className="rating-preview-wrapper">
-            <div className="stars">*****</div>
+            <div className="stars">
+              <FontAwesomeIcon icon={faStar} />
+              <FontAwesomeIcon icon={faStar} />
+              <FontAwesomeIcon icon={faStar} />
+              <FontAwesomeIcon icon={faStar} />
+              <FontAwesomeIcon icon={faStar} />
+            </div>
             <p className="rating">4.9</p>
+            <span style={{marginLeft:"0.5rem"}}>(</span>
             <p className="number-of-rating">3408</p>
-          </div>
-          <div className="review-preview-wrapper">
-            <p className="review-count">333</p>
+            <span>)</span>
+            <p className="review-count">
+              333 <span>reviews</span>
+            </p>
           </div>
         </header>
-        <button className="favorite-button">Favorite</button>
-        <button className="share-button">Sharebutton</button>
+        <button className="button favorite-button">Favorite</button>
+        <button className="button share-button"><FontAwesomeIcon icon={faShare} /></button>
       </main>
       <section className="img-wrapper">
         <img

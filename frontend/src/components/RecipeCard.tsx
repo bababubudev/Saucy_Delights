@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Link } from "react-router-dom";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import "../styles/recipecard.scss";
@@ -15,6 +14,14 @@ interface RecipeCardProps {
 }
 
 function RecipeCard(props: RecipeCardProps) {
+  const [fontSize, setFontSize] = React.useState("1rem");
+
+  useEffect(() => {
+    if (props.title.length > 20) {
+      setFontSize("0.75rem");
+    }
+  }, [props.title]);
+
   return (
     <>
       <Link to={`/recipe/${props.id}/${props.title.replace(/\s+/g, "-")}`}>
@@ -22,7 +29,9 @@ function RecipeCard(props: RecipeCardProps) {
           <div className="img-wrapper">
             <img src={props.image} alt="123" />
           </div>
-          <h4 className="card-title">{props.title}</h4>
+          <h4 className="card-title" style={{ fontSize: `${fontSize}` }}>
+            {props.title}
+          </h4>
           <div className="rating-wrapper">
             <p>{props.totalRating}</p>
             <p>
@@ -32,12 +41,6 @@ function RecipeCard(props: RecipeCardProps) {
           </div>
         </div>
       </Link>
-      {/* <Route
-        path={`/recipe/${props.id}/${props.title.replace(/\s+/g, "-")}`}
-        render={(props: any) => {
-          <Recipe {...props}></Recipe>
-        }}
-      ></Route> */}
     </>
   );
 }
