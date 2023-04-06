@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Route, Link } from "react-router-dom";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import "../styles/recipecard.scss";

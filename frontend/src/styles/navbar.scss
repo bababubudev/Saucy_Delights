@@ -83,11 +83,11 @@ nav {
     grid-row: 3/4;
     display:flex;
     position:relative;
-    border:2px $dark-color solid;
     border-radius: 0.3rem;
     width:95%;
     margin:0 auto;
     padding:0.3rem 0;
+    padding-left:0.5rem;
     margin-top:1.5rem;
     background-color: $light-color;
     margin-bottom:2rem;

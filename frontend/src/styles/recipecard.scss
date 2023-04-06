@@ -1,7 +1,7 @@
 @import "./variables.scss";
 
 .recipe-card {
-  display: flex;
+  display: grid;
   font-family: "Source Sans Pro", sans-serif;
   grid-template-columns: 45% 1fr;
   grid-template-rows: 25% 20% 1fr;
@@ -44,18 +44,18 @@
     }
   }
   .rating-wrapper {
-    display: flex;
-    align-items: center;
-    margin-left:0.5rem;
+    display:flex;
     p {
-      margin-top: 0.5rem;
-      margin-right: 0.3rem;
+      margin-left:0.5rem;
       @media (min-width: 800px) {
         margin-top: 0;
         padding-bottom:1rem;
         margin-left:0;
         &:nth-child(1) {
           margin-left:0.5rem;
+        }
+        svg {
+          margin-left:0.2rem;
         }
       }
     }
