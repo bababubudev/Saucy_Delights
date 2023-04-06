@@ -3,7 +3,6 @@
 main {
   margin-left: 2rem;
   margin-top: 0.5rem;
-
   h1 {
     font-size: 2.25rem;
   }
@@ -31,24 +30,49 @@ main {
   .favorite-button,
   .back-button {
     margin-top: 0.5rem;
-    margin-right:0.5rem;
-    color:$light-color;
-
+    margin-right: 0.5rem;
+    color: $light-color;
   }
   .favorite-button {
-    background:$lighter-accent-color;
+    background: $lighter-accent-color;
     box-shadow: 0px 0px 5px $lighter-accent-color;
-
   }
 }
 
-.img-wrapper {
+
+section {
+  margin-left: 2rem;
+  h2 {
+    font-size: 1.75rem;
+  }
+}
+
+
+.img-ingredients {
   margin-top: 2rem;
   width: 100%;
+  display: flex;
+
   img {
-    width: 300px;
-    margin: 0 auto;
+    width: 500px;
   }
+
+  .ingredients {
+    margin-left: 6rem;
+    h2 {
+      font-size: 1.75rem;
+    }
+  }
+  @media (max-width: 600px) {
+    flex-direction: column;
+    .ingredients {
+      margin-left: 0;
+    }
+  }
+}
+
+.steps {
+  margin-top: 1rem;
 }
 
 .back-button {

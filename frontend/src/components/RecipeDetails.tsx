@@ -25,7 +25,7 @@ function RecipeDetails() {
               <FontAwesomeIcon icon={faStar} />
             </div>
             <p className="rating">4.9</p>
-            <span style={{marginLeft:"0.5rem"}}>(</span>
+            <span style={{ marginLeft: "0.5rem" }}>(</span>
             <p className="number-of-rating">3408</p>
             <span>)</span>
             <p className="review-count">
@@ -34,17 +34,17 @@ function RecipeDetails() {
           </div>
         </header>
         <button className="button favorite-button">Favorite</button>
-        <button className="button share-button"><FontAwesomeIcon icon={faShare} /></button>
+        <button className="button share-button">
+          <FontAwesomeIcon icon={faShare} />
+        </button>
       </main>
-      <section className="img-wrapper">
+      <section className="img-ingredients">
         <img
           src="https://www.simplyrecipes.com/thmb/dxh2mg_24ZGjRIX21j_qfHrj0xk=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Simply-Recipes-Spaghetti-Carbonara-LEAD-7-82d6bacf7f3848a4943b14712ab205ff.jpg"
-          alt=""
+          alt="image of a spaghetti"
         />
-      </section>
-      <section className="ingredients">
-        <h2>Ingredients</h2>
-        <ul>
+        <ul className="ingredients">
+          <h2>Ingredients</h2>
           <li>1 pound spaghetti</li>
           <li>4 slices bacon</li>
           <li>1/2 cup finely chopped onion</li>
@@ -56,6 +56,7 @@ function RecipeDetails() {
           <li>1/4 teaspoon salt</li>
         </ul>
       </section>
+  
       <section className="steps">
         <h2>Steps</h2>
         <ol>
@@ -86,11 +87,7 @@ function RecipeDetails() {
           </li>
         </ol>
       </section>
-      <section className="star-rating">
-        <div className="stars">*****</div>
-        <p className="rating">4.9</p>
-        <p className="number-of-rating">3408</p>
-      </section>
+     
       <section className="reviews">
         <h2>Reviews</h2>
       </section>
