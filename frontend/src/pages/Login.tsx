@@ -1,6 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import Input from "../components/Input";
+import "../styles/login.scss"
+import "../styles/global.scss"
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -22,6 +24,7 @@ function Login() {
   }
   return (
     <>
+    <h1>Login</h1>
       <section className="form">
         <form onSubmit={onSubmitHandler}>
           <Input
@@ -30,18 +33,22 @@ function Login() {
             inputPlaceHolder="example@gmail.com"
             inputId="login-email"
             inputValue={email}
+            inputOnChange={onChangeHandler}
+            inputName="email"
           ></Input>
         
           <Input
             inputTitle="Password"
             inputType="password"
-            inputPlaceHolder=""
+            inputPlaceHolder="Your password"
             inputId="login-password"
             inputValue={password}
+            inputName="password"
+            inputOnChange={onChangeHandler}
           ></Input>
         
 
-          <button type="submit">Login</button>
+          <button type="submit" className="button" style={{marginTop:"1rem", marginLeft:"2rem"}}>Login</button>
         </form>
       </section>
     </>

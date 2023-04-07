@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, ChangeEvent } from "react";
 import "../styles/input.scss";
 
 interface InputProps {
@@ -6,7 +6,8 @@ interface InputProps {
   inputType: string;
   inputPlaceHolder: string;
   inputId: string;
-  //   inputOnChange: string;
+  inputOnChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  inputName: string;
   inputValue: string;
   accept?: string;
 }
@@ -14,14 +15,15 @@ interface InputProps {
 function Input(props: InputProps) {
   return (
     <div className="input">
-      <label for={props.inputId}>{props.inputTitle}</label>
+      <label htmlFor={props.inputId}>{props.inputTitle}</label>
       <input
         type={props.inputType}
         placeholder={props.inputPlaceHolder}
         id={props.inputId}
-        // onChange={props.inputOnChange}
+        onChange={props.inputOnChange}
         value={props.inputValue}
         required
+        name={props.inputName}
       />
       <p className="verifying">
         Verifying <span className="loader"></span>

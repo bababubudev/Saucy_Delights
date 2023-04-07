@@ -1,6 +1,9 @@
 import React from "react";
 
 import { useState, useEffect } from "react";
+import Input from "../components/Input";
+import "../styles/login.scss";
+import "../styles/global.scss";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -25,31 +28,38 @@ function Register() {
     <>
       <section className="form">
         <form onSubmit={onSubmitHandler}>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            value={email}
-            placeholder="Email"
-            onChange={onChangeHandler}
-          />
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={password}
-            placeholder="Password"
-            onChange={onChangeHandler}
-          />
-          <input
-            type="password"
-            id="password2"
-            name="password2"
-            value={password2}
-            placeholder="Confirm Your Password"
-            onChange={onChangeHandler}
-          />
-          <button type="submit">Register</button>
+          <Input
+            inputTitle="Email"
+            inputType="text"
+            inputPlaceHolder="example@gmail.com"
+            inputId="register-email"
+            inputValue={email}
+            inputOnChange={onChangeHandler}
+            inputName="email"
+          ></Input>
+
+          <Input
+            inputTitle="Password"
+            inputType="password"
+            inputPlaceHolder="Your password"
+            inputId="register-password"
+            inputValue={password}
+            inputName="password"
+            inputOnChange={onChangeHandler}
+          ></Input>
+          <Input
+            inputTitle="Confirm Password"
+            inputType="password"
+            inputPlaceHolder="Confirm Your Password"
+            inputId="register-password2"
+            inputValue={password2}
+            inputName="password2"
+            inputOnChange={onChangeHandler}
+          ></Input>
+
+          <button type="submit" className="button" style={{marginTop:"1rem", marginLeft:"2rem"}}>
+            Register
+          </button>
         </form>
       </section>
     </>

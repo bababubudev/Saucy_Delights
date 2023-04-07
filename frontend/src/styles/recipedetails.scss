@@ -41,7 +41,6 @@ main {
 
 
 section {
-  margin-left: 2rem;
   h2 {
     font-size: 1.75rem;
   }
@@ -52,7 +51,7 @@ section {
   margin-top: 2rem;
   width: 100%;
   display: flex;
-
+  margin-left:2rem;
   img {
     width: 500px;
   }
@@ -73,6 +72,11 @@ section {
 
 .steps {
   margin-top: 1rem;
+  margin-left:2rem;
+}
+
+.reviews {
+  margin-left:2rem;
 }
 
 .back-button {

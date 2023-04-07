@@ -23,6 +23,7 @@ img {
   box-shadow: 0px 0px 5px $main-color;
   padding: 0.3rem 1rem;
   border:none;
+  cursor: pointer;
   &:hover {
     opacity: 0.65;
     transition: all 0.15s ease-out;
