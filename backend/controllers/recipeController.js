@@ -1,11 +1,11 @@
 import asyncHandler from "express-async-handler"
 import { queryHandler } from "../db/queryhandler.js"
 
-const getAllRecipes = asyncHandler(async (req, res) =>
+const getHomeRecipe = asyncHandler(async (req, res) =>
 {
-    const queryText = `SELECT * FROM recipes;`
-
+    const queryText = `SELECT * FROM recipes ORDER BY RANDOM() LIMIT 5;`
     const result = await queryHandler(queryText)
+
     if (result.flag === false)
     {
         res.status(500).send({
@@ -15,6 +15,7 @@ const getAllRecipes = asyncHandler(async (req, res) =>
     }
     else
     {
+        result.message.rows.forEach(elem => console.log(elem["recipe_name"]))
         res.send({ message: result.message.rows })
     }
 })
@@ -76,7 +77,7 @@ const postRecipe = asyncHandler(async (req, res) =>
 
 const updateRecipe = asyncHandler(async (req, res) =>
 {
-    const unchangeables = ["id", "created_at"]
+    const unchangeables = ["id", "created_at", "creator_id"]
     const result = await queryHandler(`SELECT * FROM recipes WHERE id=$1;`, [req.params.id])
 
     if (result.flag === false)
@@ -90,7 +91,8 @@ const updateRecipe = asyncHandler(async (req, res) =>
     const queryData = result.message.rows[0]
     const requestedKeys = Object.keys(req.body)
 
-    const isValidObj = requestedKeys.every(key => !unchangeables.includes(key) && Object.keys(queryData).includes(key)) && requestedKeys.every(key => req.body[key] != "")
+    const isValidRequest = (key) => { return !unchangeables.includes(key) && Object.keys(queryData).includes(key) }
+    const isValidObj = requestedKeys.every(isValidRequest) && requestedKeys.every(key => req.body[key] != "")
 
     if (!isValidObj)
     {
@@ -141,6 +143,6 @@ const deleteRecipe = asyncHandler(async (req, res) =>
 
 export
 {
-    getAllRecipes, postRecipe,
+    getHomeRecipe, postRecipe,
     getRecipe, updateRecipe, deleteRecipe
 }
