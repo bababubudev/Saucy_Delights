@@ -5,12 +5,13 @@ CREATE TABLE users(
     password VARCHAR(100) NOT NULL,
     created_recipes INTEGER[],
     fav_recipes INTEGER[],
-    comments INTEGER[]
+
+    -- NOT REALLY USEFUL AS WE WILL BE IMPLEMENTING COMMENT API --
+    feedbacks INTEGER[]
 );
 
 CREATE TABLE recipes(
     id SERIAL PRIMARY KEY,
-    creator_id INTEGER,
 
     recipe_name VARCHAR(32) NOT NULL,
     description VARCHAR(500) NOT NULL,
@@ -23,19 +24,5 @@ CREATE TABLE recipes(
     created_at DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
-
-CREATE TABLE feedbacks(
-    id SERIAL PRIMARY KEY,
-    rating INTEGER NOT NULL,
-    
-    user_id INTEGER NOT NULL,
-    recipe_id INTEGER NOT NULL,
-    comment VARCHAR(500),
-    commented_at DATE NOT NULL DEFAULT CURRENT_DATE,
-
-    CONSTRAINT recipes FOREIGN KEY(recipe_id) REFERENCES recipes(id),
-    CONSTRAINT users FOREIGN KEY(user_id) REFERENCES users(id)
-);
-
-SELECT rating, comment, name, created_at FROM feedbacks INNER JOIN recipes ON feedbacks.recipe_id = recipes.id INNER JOIN users ON feedbacks.user_id = users.id;
-INSERT INTO feedbacks (rating,comment,user_id,recipe_id) VALUES (1, 'Pretty good!', 1, 10);
+--LAST COMMAND RAN--
+DROP TABLE feedbacks;
