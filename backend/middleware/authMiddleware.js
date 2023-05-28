@@ -10,7 +10,7 @@ export const protect = asyncHandler( async (req, res, next) => {
         try{
             token=req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-            const queryText = `SELECT email, name, created_recipes, fav_recipes, comments FROM users WHERE email='${decoded.email}'`
+            const queryText = `SELECT id, email, name FROM users WHERE email='${decoded.email}'`
             let result = await queryHandler(queryText)
             if (result.flag) 
             {
