@@ -1,10 +1,69 @@
 import asyncHandler from "express-async-handler"
 import { queryHandler } from "../db/queryhandler.js"
 
-const getHomeRecipe = asyncHandler(async (req, res) =>
+const getRecipes = asyncHandler(async (req, res) =>
 {
-    const queryText = `SELECT * FROM recipes ORDER BY RANDOM() LIMIT 5;`
-    const result = await queryHandler(queryText)
+    let queryText = `SELECT * FROM recipes ORDER BY RANDOM() LIMIT 5;`
+    let result = await queryHandler(queryText)
+
+    const queryExists = Object.keys(req.query).length > 0
+
+    if (queryExists)
+    {
+        const queryKeys = Object.keys(req.query)
+
+        const filters = [
+            "id", "recipe_name",
+            "nationality", "main_ingr", "food_time",
+            "difficulty", "time_taken"
+        ]
+
+        const inBetweens = {
+            id: ["offset", "limit"],
+            difficulty: ["min_difficulty", "max_difficulty"],
+            food_time: ["min_food_time", "max_food_time"],
+            time_taken: ["min_time_taken", "max_time_taken"]
+        }
+
+        const inBetweensKey = Object.keys(inBetweens)
+        const findKey = (key, find) => { return inBetweens[key].includes(find) }
+        const requestedFilter = queryKeys.filter(qKey => filters.includes(qKey) || inBetweensKey.find(key => findKey(key, qKey)))
+
+        console.log(`Requested: ${requestedFilter}`)
+
+
+
+        // const requestedFilter = queryKeys.filter(key => filters.includes(key) || inBetweens.includes(key))
+        // const isValidRequest = requestedFilter.length > 0 && queryKeys.every(key => req.query[key] != "")
+
+        // console.log(JSON.stringify(inBetweens))
+
+        // if (!isValidRequest)
+        // {
+        //     res.status(400)
+        //     throw new Error(`Please fill in the required fields!`)
+        // }
+
+        // queryText = `SELECT * FROM recipes WHERE `
+
+        // requestedFilter.forEach((elem) =>
+        // {
+        //     if (inBetweens.includes(elem))
+        //     {
+
+        //     }
+        // })
+
+        // const emptyQuery = queryKeys.every(key => queryKeys[key] == "");
+        // const fieldChecked = offLimitFields.every(key => queryKeys.includes(key)) && !emptyQuery;
+
+
+
+        // const { offset, limit } = req.query
+
+        // queryText = `SELECT * FROM recipes WHERE id BETWEEN $1 AND $2;`
+        // result = await queryHandler(queryText, [offset, limit])
+    }
 
     if (result.flag === false)
     {
@@ -15,8 +74,8 @@ const getHomeRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        result.message.rows.forEach(elem => console.log(elem["recipe_name"]))
-        res.send({ message: result.message.rows })
+        // result.message.rows.forEach(elem => console.log(elem["recipe_name"]))
+        res.send(result.message.rows)
     }
 })
 
@@ -47,19 +106,16 @@ const postRecipe = asyncHandler(async (req, res) =>
     const recipeValues = Object.values(recipeObj)
 
     const requiredFields = ["recipe_name", "description", "ingr", "difficulty"]
-
-    // NOTE: This validation can be worked on more!
     const isValidObj = requiredFields.every(key => recipeKeys.includes(key)) && recipeKeys.every(key => recipeObj[key] != "")
 
     if (!isValidObj)
     {
         res.status(400)
-        throw new Error("Please fill in the required fields!")
+        throw new Error(`Please fill in the required fields: [${requiredFields}]`)
     }
 
-    const queryIndices = recipeValues.map(value => `$${recipeValues.findIndex(elem => elem == value) + 1}`).join(',')
+    const queryIndices = recipeValues.map((value, index) => `$${index + 1}`).join(',')
     const queryText = `INSERT INTO recipes (${recipeKeys}) VALUES (${queryIndices}) RETURNING *;`
-
     const result = await queryHandler(queryText, recipeValues)
 
     if (result.flag === false)
@@ -137,12 +193,12 @@ const deleteRecipe = asyncHandler(async (req, res) =>
     }
     else
     {
-        res.send({ message: `Recipe named [${result.message.rows[0].recipe_name.toUpperCase()}]deleted!` })
+        res.send({ message: `Recipe named [${result.message.rows[0].recipe_name.toUpperCase()}] deleted!` })
     }
 })
 
 export
 {
-    getHomeRecipe, postRecipe,
+    getRecipes, postRecipe,
     getRecipe, updateRecipe, deleteRecipe
 }
