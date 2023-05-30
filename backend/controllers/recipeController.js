@@ -6,63 +6,67 @@ const getRecipes = asyncHandler(async (req, res) =>
     let queryText = `SELECT * FROM recipes ORDER BY RANDOM() LIMIT 5;`
     let result = await queryHandler(queryText)
 
-    const queryExists = Object.keys(req.query).length > 0
+    const queryParam = req.query
+    const queryKeys = Object.keys(queryParam)
 
-    if (queryExists)
+    if (queryKeys.length > 0)
     {
-        const queryKeys = Object.keys(req.query)
-
-        const filters = [
-            "id", "recipe_name",
+        const allowedRequests = [
+            "offset", "limit", "recipe_name",
             "nationality", "main_ingr", "food_time",
             "difficulty", "time_taken"
         ]
 
-        const inBetweens = {
-            id: ["offset", "limit"],
-            difficulty: ["min_difficulty", "max_difficulty"],
-            food_time: ["min_food_time", "max_food_time"],
-            time_taken: ["min_time_taken", "max_time_taken"]
+        const betweens = queryKeys
+            .filter(key => key.includes("_min") || key.includes("_max"))
+            .map(key => key.slice(0, -4))
+
+        const allowedBetweens = betweens.every(elem => allowedRequests.includes(elem))
+
+        if (!allowedBetweens)
+        {
+            res.status(406)
+            throw new Error("Request error...")
         }
 
-        const inBetweensKey = Object.keys(inBetweens)
-        const findKey = (key, find) => { return inBetweens[key].includes(find) }
-        const requestedFilter = queryKeys.filter(qKey => filters.includes(qKey) || inBetweensKey.find(key => findKey(key, qKey)))
+        queryText = `SELECT * FROM recipes WHERE `
 
-        console.log(`Requested: ${requestedFilter}`)
+        let prevElem = "";
+        const betweenFilters = betweens
+            .map(elem =>
+            {
+                if (prevElem === elem) return null;
 
+                const minKey = `${elem}_min`;
+                const maxKey = `${elem}_max`;
 
+                prevElem = elem
 
-        // const requestedFilter = queryKeys.filter(key => filters.includes(key) || inBetweens.includes(key))
-        // const isValidRequest = requestedFilter.length > 0 && queryKeys.every(key => req.query[key] != "")
+                if (queryKeys.includes(minKey) && queryKeys.includes(maxKey))
+                    return `${elem} BETWEEN ${req.query[minKey]} AND ${req.query[maxKey]}`;
+                else if (queryKeys.includes(minKey))
+                    return `${elem} >= ${req.query[minKey]}`;
+                else if (queryKeys.includes(maxKey))
+                    return `${elem} <= ${req.query[maxKey]}`;
 
-        // console.log(JSON.stringify(inBetweens))
+                return null;
+            })
+            .filter(filter => filter !== null);
 
-        // if (!isValidRequest)
-        // {
-        //     res.status(400)
-        //     throw new Error(`Please fill in the required fields!`)
-        // }
+        const queryFilterText = betweenFilters.join(" AND ");
+        queryText += queryFilterText + `;`;
+        console.log(queryText)
 
-        // queryText = `SELECT * FROM recipes WHERE `
+        // const filteredRequest = allowedRequests.filter(elem => normalAndBetweeners.includes(elem))
 
-        // requestedFilter.forEach((elem) =>
-        // {
-        //     if (inBetweens.includes(elem))
-        //     {
-
-        //     }
-        // })
 
         // const emptyQuery = queryKeys.every(key => queryKeys[key] == "");
         // const fieldChecked = offLimitFields.every(key => queryKeys.includes(key)) && !emptyQuery;
 
-
-
         // const { offset, limit } = req.query
 
         // queryText = `SELECT * FROM recipes WHERE id BETWEEN $1 AND $2;`
-        // result = await queryHandler(queryText, [offset, limit])
+        result = await queryHandler(queryText)
     }
 
     if (result.flag === false)
