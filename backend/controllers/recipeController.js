@@ -6,37 +6,35 @@ const getBetweenFilter = (betweens, params) =>
     let prevElem = ""
 
     const queryKeys = Object.keys(params)
-    const betweenFilters = betweens
-        .map(elem =>
+    const betweenFilters = betweens.map(elem =>
+    {
+        if (prevElem === elem) return null
+
+        const minKey = `${elem}_min`
+        const maxKey = `${elem}_max`
+
+        const minValue = `$${queryKeys.findIndex(qk => qk === minKey) + 1}`
+        const maxValue = `$${queryKeys.findIndex(qk => qk === maxKey) + 1}`
+
+        prevElem = elem
+
+        if (queryKeys.includes(minKey) && queryKeys.includes(maxKey))
         {
-            if (prevElem === elem) return null
-
-            const minKey = `${elem}_min`
-            const maxKey = `${elem}_max`
-
-            const minValue = `$${queryKeys.findIndex(qk => qk === minKey) + 1}`
-            const maxValue = `$${queryKeys.findIndex(qk => qk === maxKey) + 1}`
-
-            prevElem = elem
-
-            if (queryKeys.includes(minKey) && queryKeys.includes(maxKey))
-            {
-                return `${elem} BETWEEN ${minValue} AND ${maxValue}`
-            }
-            else if (queryKeys.includes(minKey))
-            {
-                return `${elem}>=${minValue}`
-            }
-            else if (queryKeys.includes(maxKey))
-            {
-                return `${elem}<=${maxValue}`
-            }
-            else
-            {
-                return null
-            }
-        })
-        .filter(filter => filter !== null)
+            return `${elem} BETWEEN ${minValue} AND ${maxValue}`
+        }
+        else if (queryKeys.includes(minKey))
+        {
+            return `${elem}>=${minValue}`
+        }
+        else if (queryKeys.includes(maxKey))
+        {
+            return `${elem}<=${maxValue}`
+        }
+        else
+        {
+            return null
+        }
+    }).filter(filter => filter !== null)
 
     return betweenFilters.join(" AND ")
 }
@@ -44,17 +42,31 @@ const getBetweenFilter = (betweens, params) =>
 const getNormalFilter = (normals, params) =>
 {
     const queryKeys = Object.keys(params)
-    const normalFilter = normals.
-        map(elem =>
-        {
-            const value = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
-            return `${elem}=${value}`
-        })
+    const numericals = ["time_taken", "food_time", "difficulty"]
+
+    const normalFilter = normals.map(elem =>
+    {
+        const isNumerical = numericals.includes(elem)
+        const value = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
+        return isNumerical ? `${elem}=${value}` : `${elem} ILIKE ${value}`
+    })
 
     return normalFilter.join(" AND ")
 }
 
-const getRecipes = asyncHandler(async (req, res) =>
+const getArrayFilter = (arrays, params) =>
+{
+    const queryKeys = Object.keys(params)
+    const arrayFilter = arrays.map(elem =>
+    {
+        const value = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
+        return `${value} ILIKE ANY(${elem})`
+    })
+
+    return arrayFilter.join(" AND ")
+}
+
+const getFilteredRecipes = asyncHandler(async (req, res) =>
 {
     let queryText = `SELECT * FROM recipes ORDER BY RANDOM() LIMIT 5;`
     let result = await queryHandler(queryText)
@@ -74,17 +86,20 @@ const getRecipes = asyncHandler(async (req, res) =>
     if (queryKeys.length > 0)
     {
         const allowedRequests = [
-            "offset", "limit", "recipe_name",
-            "nationality", "main_ingr", "food_time",
+            "recipe_name", "nationality",
+            "main_ingr", "food_time",
             "difficulty", "time_taken"
         ]
+
+        const arrayRequest = ["ingr"]
 
         const unfilteredBetween = queryKeys.filter(key => key.includes("_min") || key.includes("_max"))
 
         const betweens = unfilteredBetween.map(key => key.slice(0, -4))
-        const normals = allowedRequests.filter(elem => queryParams.hasOwnProperty(elem));
+        const normals = allowedRequests.filter(elem => queryParams.hasOwnProperty(elem))
+        const arrays = arrayRequest.filter(elem => queryParams.hasOwnProperty(elem))
 
-        const invalid = normals.length === 0 && betweens.length === 0;
+        const invalid = normals.length == 0 && betweens.length == 0 && arrays.length == 0
         const allowedBetweens = betweens.every(elem => allowedRequests.includes(elem))
 
         if (invalid || !allowedBetweens)
@@ -94,7 +109,7 @@ const getRecipes = asyncHandler(async (req, res) =>
         }
 
         const filteredParams = normals
-            .concat(unfilteredBetween)
+            .concat(unfilteredBetween, arrays)
             .reduce((acc, key) =>
             {
                 acc[key] = queryParams[key]
@@ -108,9 +123,19 @@ const getRecipes = asyncHandler(async (req, res) =>
             queryText += getNormalFilter(normals, filteredParams)
         }
 
-        if (betweens.length > 0)
+        if (arrays.length > 0)
         {
             if (normals.length > 0)
+            {
+                queryText += " AND "
+            }
+
+            queryText += getArrayFilter(arrays, filteredParams)
+        }
+
+        if (betweens.length > 0)
+        {
+            if (normals.length > 0 || normals.length > 0)
             {
                 queryText += " AND "
             }
@@ -257,6 +282,6 @@ const deleteRecipe = asyncHandler(async (req, res) =>
 
 export
 {
-    getRecipes, postRecipe,
+    getFilteredRecipes, postRecipe,
     getRecipe, updateRecipe, deleteRecipe
 }
