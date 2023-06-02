@@ -1,13 +1,75 @@
 import asyncHandler from "express-async-handler"
 import { queryHandler } from "../db/queryhandler.js"
 
+const getBetweenFilter = (betweens, params) =>
+{
+    let prevElem = ""
+
+    const queryKeys = Object.keys(params)
+    const betweenFilters = betweens
+        .map(elem =>
+        {
+            if (prevElem === elem) return null
+
+            const minKey = `${elem}_min`
+            const maxKey = `${elem}_max`
+
+            const minValue = `$${queryKeys.findIndex(qk => qk === minKey) + 1}`
+            const maxValue = `$${queryKeys.findIndex(qk => qk === maxKey) + 1}`
+
+            prevElem = elem
+
+            if (queryKeys.includes(minKey) && queryKeys.includes(maxKey))
+            {
+                return `${elem} BETWEEN ${minValue} AND ${maxValue}`
+            }
+            else if (queryKeys.includes(minKey))
+            {
+                return `${elem}>=${minValue}`
+            }
+            else if (queryKeys.includes(maxKey))
+            {
+                return `${elem}<=${maxValue}`
+            }
+            else
+            {
+                return null
+            }
+        })
+        .filter(filter => filter !== null)
+
+    return betweenFilters.join(" AND ")
+}
+
+const getNormalFilter = (normals, params) =>
+{
+    const queryKeys = Object.keys(params)
+    const normalFilter = normals.
+        map(elem =>
+        {
+            const value = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
+            return `${elem}=${value}`
+        })
+
+    return normalFilter.join(" AND ")
+}
+
 const getRecipes = asyncHandler(async (req, res) =>
 {
     let queryText = `SELECT * FROM recipes ORDER BY RANDOM() LIMIT 5;`
     let result = await queryHandler(queryText)
 
-    const queryParam = req.query
-    const queryKeys = Object.keys(queryParam)
+    const queryParams = req.query
+
+    Object.keys(queryParams).forEach(key =>
+    {
+        if (queryParams[key] === "")
+        {
+            delete queryParams[key]
+        }
+    })
+
+    const queryKeys = Object.keys(queryParams)
 
     if (queryKeys.length > 0)
     {
@@ -17,56 +79,49 @@ const getRecipes = asyncHandler(async (req, res) =>
             "difficulty", "time_taken"
         ]
 
-        const betweens = queryKeys
-            .filter(key => key.includes("_min") || key.includes("_max"))
-            .map(key => key.slice(0, -4))
+        const unfilteredBetween = queryKeys.filter(key => key.includes("_min") || key.includes("_max"))
 
+        const betweens = unfilteredBetween.map(key => key.slice(0, -4))
+        const normals = allowedRequests.filter(elem => queryParams.hasOwnProperty(elem));
+
+        const invalid = normals.length === 0 && betweens.length === 0;
         const allowedBetweens = betweens.every(elem => allowedRequests.includes(elem))
 
-        if (!allowedBetweens)
+        if (invalid || !allowedBetweens)
         {
             res.status(406)
             throw new Error("Request error...")
         }
 
-        queryText = `SELECT * FROM recipes WHERE `
-
-        let prevElem = "";
-        const betweenFilters = betweens
-            .map(elem =>
+        const filteredParams = normals
+            .concat(unfilteredBetween)
+            .reduce((acc, key) =>
             {
-                if (prevElem === elem) return null;
+                acc[key] = queryParams[key]
+                return acc
+            }, {})
 
-                const minKey = `${elem}_min`;
-                const maxKey = `${elem}_max`;
+        let queryText = `SELECT * FROM recipes WHERE `
 
-                prevElem = elem
+        if (normals.length > 0)
+        {
+            queryText += getNormalFilter(normals, filteredParams)
+        }
 
-                if (queryKeys.includes(minKey) && queryKeys.includes(maxKey))
-                    return `${elem} BETWEEN ${req.query[minKey]} AND ${req.query[maxKey]}`;
-                else if (queryKeys.includes(minKey))
-                    return `${elem} >= ${req.query[minKey]}`;
-                else if (queryKeys.includes(maxKey))
-                    return `${elem} <= ${req.query[maxKey]}`;
+        if (betweens.length > 0)
+        {
+            if (normals.length > 0)
+            {
+                queryText += " AND "
+            }
+            queryText += getBetweenFilter(betweens, filteredParams)
+        }
 
-                return null;
-            })
-            .filter(filter => filter !== null);
+        queryText += ";"
 
-        const queryFilterText = betweenFilters.join(" AND ");
-        queryText += queryFilterText + `;`;
         console.log(queryText)
 
-        // const filteredRequest = allowedRequests.filter(elem => normalAndBetweeners.includes(elem))
-
-
-        // const emptyQuery = queryKeys.every(key => queryKeys[key] == "");
-        // const fieldChecked = offLimitFields.every(key => queryKeys.includes(key)) && !emptyQuery;
-
-        // const { offset, limit } = req.query
-
-        // queryText = `SELECT * FROM recipes WHERE id BETWEEN $1 AND $2;`
-        result = await queryHandler(queryText)
+        result = await queryHandler(queryText, Object.values(filteredParams))
     }
 
     if (result.flag === false)
@@ -78,7 +133,6 @@ const getRecipes = asyncHandler(async (req, res) =>
     }
     else
     {
-        // result.message.rows.forEach(elem => console.log(elem["recipe_name"]))
         res.send(result.message.rows)
     }
 })
@@ -154,7 +208,7 @@ const updateRecipe = asyncHandler(async (req, res) =>
     const isValidRequest = (key) => { return !unchangeables.includes(key) && Object.keys(queryData).includes(key) }
     const isValidObj = requestedKeys.every(isValidRequest) && requestedKeys.every(key => req.body[key] != "")
 
-    if (!isValidObj)
+    if (!isValidObj || requestedKeys.length === 0)
     {
         res.status(400)
         throw new Error("Sent request is not valid!")
