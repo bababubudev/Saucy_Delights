@@ -45,5 +45,9 @@ CREATE TABLE user_feedback(
 CREATE TABLE feedbacks(
     id SERIAL PRIMARY KEY,
     rating INTEGER NOT NULL,
-    comment VARCHAR(500)
+    recipe_id INTEGER NOT NULL,
+    comment VARCHAR(500),
+    
+    CONSTRAINT fk_recipe FOREIGN KEY(recipe_id) REFERENCES recipes(id) ON DELETE SET NULL 
+   
 );
