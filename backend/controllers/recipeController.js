@@ -59,7 +59,14 @@ const getArrayFilter = (arrays, params) =>
     const queryKeys = Object.keys(params)
     const arrayFilter = arrays.map(elem =>
     {
-        params[elem] = params[elem].split(",")
+        if (Array.isArray(params[elem]))
+        {
+            params[elem] = params[elem].at(-1).split(",")
+        }
+        else
+        {
+            params[elem] = params[elem].split(",")
+        }
 
         const keyIndex = queryKeys.findIndex(qk => qk === elem)
         const value = params[elem].map((val, index) =>
@@ -68,7 +75,7 @@ const getArrayFilter = (arrays, params) =>
         })
 
         return value.join(" OR ")
-    })
+    }).filter(filter => filter !== null)
 
     return arrayFilter.join(" AND ")
 }
@@ -80,13 +87,13 @@ const getFilteredRecipes = asyncHandler(async (req, res) =>
 
     const queryParams = req.query
 
-    Object.keys(queryParams).forEach(key =>
+    for (const [key, value] of Object.entries(queryParams))
     {
-        if (queryParams[key] === "")
+        if (value === "")
         {
             delete queryParams[key]
         }
-    })
+    }
 
     const queryKeys = Object.keys(queryParams)
 
