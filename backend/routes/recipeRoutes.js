@@ -1,7 +1,7 @@
 import express from "express"
 import
 {
-    getRecipes,
+    getFilteredRecipes,
     postRecipe,
     getRecipe,
     updateRecipe,
@@ -10,7 +10,7 @@ import
 
 const recipeRouter = express.Router()
 
-recipeRouter.route("/").get(getRecipes).post(postRecipe)
+recipeRouter.route("/").get(getFilteredRecipes).post(postRecipe)
 recipeRouter.route("/:id").get(getRecipe).patch(updateRecipe).delete(deleteRecipe)
 
 export { recipeRouter }
