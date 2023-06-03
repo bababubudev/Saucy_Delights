@@ -47,8 +47,8 @@ const getNormalFilter = (normals, params) =>
     const normalFilter = normals.map(elem =>
     {
         const isNumerical = numericals.includes(elem)
-        const value = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
-        return isNumerical ? `${elem}=${value}` : `${elem} ILIKE ${value}`
+        const index = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
+        return isNumerical ? `${elem}=${index}` : `${elem} ILIKE ${index}`
     })
 
     return normalFilter.join(" AND ")
@@ -59,8 +59,15 @@ const getArrayFilter = (arrays, params) =>
     const queryKeys = Object.keys(params)
     const arrayFilter = arrays.map(elem =>
     {
-        const value = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
-        return `${value} ILIKE ANY(${elem})`
+        params[elem] = params[elem].split(",")
+
+        const keyIndex = queryKeys.findIndex(qk => qk === elem)
+        const value = params[elem].map((val, index) =>
+        {
+            return `$${index + keyIndex + 1} ILIKE ANY(${elem})`
+        })
+
+        return value.join(" OR ")
     })
 
     return arrayFilter.join(" AND ")
@@ -143,10 +150,10 @@ const getFilteredRecipes = asyncHandler(async (req, res) =>
         }
 
         queryText += ";"
-
         console.log(queryText)
 
-        result = await queryHandler(queryText, Object.values(filteredParams))
+        const filteredValues = Object.values(filteredParams).flat().map(val => val.trim())
+        result = await queryHandler(queryText, filteredValues)
     }
 
     if (result.flag === false)
@@ -186,7 +193,6 @@ const postRecipe = asyncHandler(async (req, res) =>
 {
     const recipeObj = req.body
     const recipeKeys = Object.keys(recipeObj)
-    const recipeValues = Object.values(recipeObj)
 
     const requiredFields = ["recipe_name", "description", "ingr", "difficulty"]
     const isValidObj = requiredFields.every(key => recipeKeys.includes(key)) && recipeKeys.every(key => recipeObj[key] != "")
@@ -197,10 +203,12 @@ const postRecipe = asyncHandler(async (req, res) =>
         throw new Error(`Please fill in the required fields: [${requiredFields}]`)
     }
 
-    const queryIndices = recipeValues.map((value, index) => `$${index + 1}`).join(',')
-    const queryText = `INSERT INTO recipes (${recipeKeys}) VALUES (${queryIndices}) RETURNING *;`
-    const result = await queryHandler(queryText, recipeValues)
+    const queryColumns = recipeKeys.join(", ")
+    const placeHolders = recipeKeys.map((_, index) => `$${index + 1}`).join(',')
+    const queryText = `INSERT INTO recipes (${queryColumns}) VALUES (${placeHolders}) RETURNING *;`
+    const result = await queryHandler(queryText, Object.values(recipeObj))
 
+    console.log(queryText)
     if (result.flag === false)
     {
         res.status(500).send({
@@ -240,13 +248,19 @@ const updateRecipe = asyncHandler(async (req, res) =>
     }
 
     let keyValue = `UPDATE recipes SET `
+    const params = []
 
-    requestedKeys.forEach((key, index) => keyValue += index == requestedKeys.length - 1 ? `${key}=$${index + 1} ` : `${key}=$${index + 1}, `)
-    keyValue += `WHERE id=$${requestedKeys.length + 1}`
+    requestedKeys.forEach((key, index) =>
+    {
+        keyValue += `${key}=$${index + 1}, `
+        params.push(req.body[key])
+    })
 
-    const params = Object.values(req.body)
+    keyValue = keyValue.slice(0, -2)
+    keyValue += ` WHERE id=$${requestedKeys.length + 1}`
     params.push(req.params.id)
 
+    console.log(keyValue)
     const newResult = await queryHandler(keyValue, params)
     if (newResult.flag === false)
     {
@@ -265,6 +279,7 @@ const deleteRecipe = asyncHandler(async (req, res) =>
 {
     const id = req.params.id
     const queryText = `DELETE FROM recipes WHERE id = $1 RETURNING *; `
+    console.log(queryText)
     const result = await queryHandler(queryText, [id])
 
     if (result.flag === false)
