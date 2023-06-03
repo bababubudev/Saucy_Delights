@@ -10,6 +10,11 @@ const getBetweenFilter = (betweens, params) =>
     {
         if (prevElem === elem) return null
 
+        if (Array.isArray(params[elem]))
+        {
+            params[elem] = params[elem].at(-1)
+        }
+
         const minKey = `${elem}_min`
         const maxKey = `${elem}_max`
 
@@ -46,6 +51,11 @@ const getNormalFilter = (normals, params) =>
 
     const normalFilter = normals.map(elem =>
     {
+        if (Array.isArray(params[elem]))
+        {
+            params[elem] = params[elem].at(-1)
+        }
+
         const isNumerical = numericals.includes(elem)
         const index = `$${queryKeys.findIndex(qk => qk === elem) + 1}`
         return isNumerical ? `${elem}=${index}` : `${elem} ILIKE ${index}`
@@ -75,17 +85,43 @@ const getArrayFilter = (arrays, params) =>
         })
 
         return value.join(" OR ")
-    }).filter(filter => filter !== null)
+    })
 
     return arrayFilter.join(" AND ")
 }
 
+const getOffLimitFilter = (offset, limit, length) =>
+{
+    const values = []
+    const clauses = []
+
+    if (offset)
+    {
+        clauses.push(` OFFSET $${1 + length + values.length}`)
+        values.push(offset)
+    }
+
+    if (limit)
+    {
+        clauses.push(` LIMIT $${1 + length + values.length}`)
+        values.push(limit)
+    }
+
+    let text = `${clauses.join("")}`
+    return { text, values }
+}
+
+
 const getFilteredRecipes = asyncHandler(async (req, res) =>
 {
-    let queryText = `SELECT * FROM recipes ORDER BY RANDOM() LIMIT 5;`
-    let result = await queryHandler(queryText)
-
     const queryParams = req.query
+    const { offset, limit } = queryParams
+
+    delete queryParams.offset
+    delete queryParams.limit
+
+    let queryText = `SELECT * FROM recipes`
+    let queryValues = []
 
     for (const [key, value] of Object.entries(queryParams))
     {
@@ -130,7 +166,7 @@ const getFilteredRecipes = asyncHandler(async (req, res) =>
                 return acc
             }, {})
 
-        let queryText = `SELECT * FROM recipes WHERE `
+        queryText += ` WHERE `
 
         if (normals.length > 0)
         {
@@ -153,15 +189,27 @@ const getFilteredRecipes = asyncHandler(async (req, res) =>
             {
                 queryText += " AND "
             }
+
             queryText += getBetweenFilter(betweens, filteredParams)
         }
 
-        queryText += ";"
-        console.log(queryText)
-
         const filteredValues = Object.values(filteredParams).flat().map(val => val.trim())
-        result = await queryHandler(queryText, filteredValues)
+        const { text, values } = getOffLimitFilter(offset, limit, filteredValues.length)
+
+        queryText += ` ORDER BY id ASC${text}`
+        queryValues = filteredValues.concat(values)
     }
+    else if (offset || limit)
+    {
+        const { text, values } = getOffLimitFilter(offset, limit, 0)
+        queryText += ` ORDER BY id ASC${text}`
+        queryValues = values
+    }
+
+    queryText += ";"
+    let result = await queryHandler(queryText, queryValues)
+
+    console.log(queryText)
 
     if (result.flag === false)
     {
