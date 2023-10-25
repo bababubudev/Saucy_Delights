@@ -6,6 +6,7 @@ import "../styles/login.scss";
 import "../styles/global.scss";
 
 function Register() {
+  const [matchedPassword, setMatchedPassword] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,8 +22,24 @@ function Register() {
     }));
   }
 
-  function onSubmitHandler(e) {
+  async function onSubmitHandler(e) {
     e.preventDefault();
+    if (password !== password2) {
+      setMatchedPassword(false);
+      console.log(matchedPassword)
+      return;
+    }
+    console.log("hello");
+    await fetch("/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    });
   }
   return (
     <>
@@ -56,8 +73,16 @@ function Register() {
             inputName="password2"
             inputOnChange={onChangeHandler}
           ></Input>
-
-          <button type="submit" className="button" style={{marginTop:"1rem", marginLeft:"2rem"}}>
+          {!matchedPassword && (
+            <p style={{ marginLeft: "2rem"}}>
+              Passwords do not match
+            </p>
+          )}
+          <button
+            type="submit"
+            className="button"
+            style={{ marginTop: "1rem", marginLeft: "2rem" }}
+          >
             Register
           </button>
         </form>

@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "../components/Input";
 import "../styles/createrecipe.scss";
 import { Link } from "react-router-dom";
 import "../styles/global.scss";
 
 function CreateRecipe() {
+  const [formData, setFormData] = useState({
+    recipeTitle: "",
+    recipeIngredients: "",
+    recipeTime: "",
+  });
+
+  function onChangeHandler(event: React.ChangeEvent<HTMLInputElement>) {
+    console.log(event.target.name)
+    console.log(event.target.value)
+    setFormData((prevState) => ({
+      ...prevState,
+      [event.target.name]: event.target.value,
+    }));
+  }
   return (
     <>
       <Link to="/" className="button" style={{ marginLeft: "2rem" }}>
@@ -16,8 +30,10 @@ function CreateRecipe() {
           inputTitle="Recipe Title"
           inputType="text"
           inputId="recipe-title"
-          inputValue=""
+          inputValue={formData.recipeTitle}
           inputPlaceHolder="Set a name for your recipe"
+          inputName="recipeTitle"
+          inputOnChange={onChangeHandler}
         ></Input>
         <Input
           inputTitle="Recipe Image (JPG or PNG)"
@@ -30,8 +46,10 @@ function CreateRecipe() {
           inputTitle="Ingredients"
           inputType="text"
           inputId="recipe-ingredients"
-          inputValue=""
+          inputValue={formData.recipeIngredients}
           inputPlaceHolder="Put the ingredients for your recipe (Freely type)"
+          inputOnChange={onChangeHandler}
+          inputName="recipeIngredients"
         ></Input>
         <div className="recipe-cuisine-wrapper">
           <label htmlFor="recipe-cuisine">Cuisine</label>
@@ -53,9 +71,11 @@ function CreateRecipe() {
         <Input
           inputTitle="Total Time (Minutes)"
           inputType="number"
-          inputId="recipe-time"
-          inputValue=""
+          inputId="recipeTime"
+          inputValue={formData.recipeTime}
           inputPlaceHolder="How long this recipe takes"
+          inputOnChange={onChangeHandler}
+          inputName="recipeTime"
         ></Input>
 
         <div className="recipe-steps-wrapper">
