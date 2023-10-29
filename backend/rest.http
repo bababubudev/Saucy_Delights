@@ -24,4 +24,5 @@ Content-Type: application/json
 
 {
     "email": "tester@gmail.com"
+    "token":
 }
