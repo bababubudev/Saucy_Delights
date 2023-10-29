@@ -3,17 +3,10 @@ import React from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import TextField from "@mui/material/TextField";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import { Button, FormControl, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -23,7 +16,11 @@ const loginSchema = z.object({
 type loginSchema = z.infer<typeof loginSchema>;
 
 const page = () => {
-  const form = useForm<loginSchema>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<loginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -31,44 +28,38 @@ const page = () => {
     },
   });
 
-  function onSubmitHandler(values: loginSchema) {}
+  function onSubmitHandler(values: loginSchema) {
+    console.log(values);
+  }
 
   return (
     <div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmitHandler)}
-          className="space-y-8"
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="youremail@gmail.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      <form onSubmit={handleSubmit(onSubmitHandler)}>
+        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+          <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
+          <TextField
+            id="login-email"
+            label="Email"
+            variant="outlined"
+            {...register("email")}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        </Box>
+        <Typography variant="body2" color="red">
+          {errors.email && <p>{errors.email.message}</p>}
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+          <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
+          <TextField
+            id="login-password"
+            label="Password"
+            variant="outlined"
+            {...register("password")}
           />
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
+        </Box>
+        <Button type="submit" variant="contained">
+          Login
+        </Button>
+      </form>
     </div>
   );
 };
