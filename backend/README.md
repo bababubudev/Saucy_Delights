@@ -53,8 +53,7 @@ Create a `.env` file in the `backend` directory and add the following environmen
 
 ```
 PORT=5000
-ACCESS_TOKEN_SECRET=your_secret_key
-DATABASE_URL=your_database_url
+DB_PASSWORD=$(CLIENT_PASSWRD)
 ```
 
 ## Usage
